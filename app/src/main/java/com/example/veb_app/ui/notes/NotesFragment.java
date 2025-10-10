@@ -10,6 +10,7 @@ import android.text.style.StrikethroughSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -468,7 +469,15 @@ public class NotesFragment extends Fragment {
         LinearLayout noteContainer = new LinearLayout(getContext());
         noteContainer.setOrientation(LinearLayout.VERTICAL);
         noteContainer.setPadding(24, 24, 24, 24); // Increased padding for better spacing
-        noteContainer.setBackgroundResource(R.drawable.note_container_background);
+        
+        // Use different background based on pin status
+        if (note.isPinned()) {
+            noteContainer.setBackgroundResource(R.drawable.pinned_note_container_background);
+            android.util.Log.d("PinColor", "Using pinned note background for pinned note");
+        } else {
+            noteContainer.setBackgroundResource(R.drawable.note_container_background);
+            android.util.Log.d("PinColor", "Using regular note background for unpinned note");
+        }
         
         LinearLayout.LayoutParams containerParams = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -508,7 +517,7 @@ public class NotesFragment extends Fragment {
         bodyText.setPadding(16, 12, 16, 16); // Add more padding for better spacing
         bodyText.setLineSpacing(4, 1.1f); // Add line spacing for better readability
 
-        // Add title container and body to main container
+        // Add title container and body to note container
         noteContainer.addView(titleContainer);
         noteContainer.addView(bodyText);
 
@@ -666,21 +675,64 @@ public class NotesFragment extends Fragment {
     }
 
     private void togglePinNote(Note note, View noteContainer) {
-        note.setPinned(!note.isPinned());
-        
-        // Move the note to the top if pinned, or to its natural position if unpinned
+        boolean wasPinned = note.isPinned();
+        boolean isNowPinned = !wasPinned;
+
+        android.util.Log.d("TogglePin", "Note was pinned: " + wasPinned + ", now pinned: " + isNowPinned);
+
         LinearLayout notesContainer = binding.getRoot().findViewById(R.id.notes_container);
-        notesContainer.removeView(noteContainer);
-        
-        if (note.isPinned()) {
+
+        if (isNowPinned) {
+            // If pinning a new note, first unpin any existing pinned note
+            unpinExistingNote(notesContainer);
+            
+            // Now pin the new note
+            note.setPinned(true);
+            
+            // Remove the old container and create a new one with updated pin status
+            notesContainer.removeView(noteContainer);
+            View newNoteContainer = createNoteContainer(note);
+            
             // Add pinned note at the top (after default text if visible)
             int insertIndex = binding.textNotes.getVisibility() == View.VISIBLE ? 1 : 0;
-            notesContainer.addView(noteContainer, insertIndex);
+            notesContainer.addView(newNoteContainer, insertIndex);
             Toast.makeText(getContext(), "Note pinned", Toast.LENGTH_SHORT).show();
         } else {
+            // Unpinning the note
+            note.setPinned(false);
+            
+            // Remove the old container and create a new one with updated pin status
+            notesContainer.removeView(noteContainer);
+            View newNoteContainer = createNoteContainer(note);
+            
             // Add unpinned note at the end
-            notesContainer.addView(noteContainer);
+            notesContainer.addView(newNoteContainer);
             Toast.makeText(getContext(), "Note unpinned", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void unpinExistingNote(LinearLayout notesContainer) {
+        // Find and unpin any existing pinned note
+        for (int i = 0; i < notesContainer.getChildCount(); i++) {
+            View child = notesContainer.getChildAt(i);
+            if (child.getTag() instanceof Note) {
+                Note existingNote = (Note) child.getTag();
+                if (existingNote.isPinned()) {
+                    android.util.Log.d("UnpinExisting", "Unpinning existing pinned note");
+                    
+                    // Unpin the existing note
+                    existingNote.setPinned(false);
+                    
+                    // Remove the old container and create a new one
+                    notesContainer.removeView(child);
+                    View newNoteContainer = createNoteContainer(existingNote);
+                    
+                    // Add the unpinned note at the end
+                    notesContainer.addView(newNoteContainer);
+                    
+                    break; // Only one note can be pinned at a time
+                }
+            }
         }
     }
 }
