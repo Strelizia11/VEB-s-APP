@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/sage_green"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="16dp">
+
+    <!-- Burger Menu Button -->
+    <ImageButton
+        android:id="@+id/btn_burger_menu"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_menu_24dp"
+        android:contentDescription="Menu"
+        android:tint="@color/white"
+        android:scaleType="centerInside"
+        android:padding="16dp" />
+
+    <!-- Spacer to push title to the right -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="1" />
+
+    <!-- VEB Title -->
+    <TextView
+        android:id="@+id/tv_app_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="VEB"
+        android:textColor="@color/white"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp" />
+
+</LinearLayout>

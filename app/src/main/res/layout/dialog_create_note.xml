@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/white">
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create New Note"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/sage_green"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Note Title Input -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:boxStrokeColor="@color/sage_green"
+        app:hintTextColor="@color/sage_green">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_note_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Note Title"
+            android:textSize="16sp"
+            android:inputType="textCapSentences" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Note Body Input -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:boxStrokeColor="@color/sage_green"
+        app:hintTextColor="@color/sage_green">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_note_body"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:hint="Note Content"
+            android:textSize="16sp"
+            android:inputType="textMultiLine|textCapSentences"
+            android:gravity="top" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Text Formatting Options -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Text Formatting:"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/sage_green"
+        android:layout_marginBottom="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="24dp">
+
+        <!-- Bold Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_bold"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="B"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            app:strokeColor="@color/sage_green"
+            app:strokeWidth="2dp"
+            app:cornerRadius="8dp" />
+
+        <!-- Italic Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_italic"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:text="I"
+            android:textStyle="italic"
+            android:textSize="16sp"
+            app:strokeColor="@color/sage_green"
+            app:strokeWidth="2dp"
+            app:cornerRadius="8dp" />
+
+        <!-- Underline Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_underline"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:text="U"
+            android:textSize="16sp"
+            app:strokeColor="@color/sage_green"
+            app:strokeWidth="2dp"
+            app:cornerRadius="8dp" />
+
+        <!-- Strikethrough Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_strikethrough"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:text="S"
+            android:textSize="16sp"
+            app:strokeColor="@color/sage_green"
+            app:strokeWidth="2dp"
+            app:cornerRadius="8dp" />
+
+    </LinearLayout>
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <!-- Cancel Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_cancel"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="Cancel"
+            android:textColor="@color/sage_green"
+            app:strokeColor="@color/sage_green"
+            app:strokeWidth="2dp"
+            app:cornerRadius="8dp" />
+
+        <!-- Save Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/sage_green"
+            app:cornerRadius="8dp" />
+
+    </LinearLayout>
+
+</LinearLayout>
