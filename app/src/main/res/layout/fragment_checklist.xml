@@ -1,23 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/md_theme_light_background"
     tools:context=".ui.checklist.ChecklistFragment">
 
-    <TextView
-        android:id="@+id/text_checklist"
+    <!-- Header with Progress -->
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:textColor="@color/sage_green"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:background="?attr/colorSurface"
+        app:elevation="@dimen/elevation_2">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_16">
+
+            <!-- Progress Overview -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="@dimen/spacing_16">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_progress_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3 of 8 tasks completed"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="37% complete"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:layout_marginTop="@dimen/spacing_4" />
+
+                </LinearLayout>
+
+                <!-- Progress Circle -->
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/progress_circle"
+                    android:layout_width="@dimen/progress_circle_size"
+                    android:layout_height="@dimen/progress_circle_size"
+                    android:progress="37"
+                    app:indicatorColor="?attr/colorPrimary"
+                    app:trackColor="?attr/colorSurfaceVariant"
+                    app:trackThickness="6dp"
+                    app:indicatorSize="48dp" />
+
+            </LinearLayout>
+
+            <!-- Progress Bar -->
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/progress_bar_height_thick"
+                android:progress="37"
+                app:indicatorColor="?attr/colorPrimary"
+                app:trackColor="?attr/colorSurfaceVariant"
+                app:trackThickness="8dp"
+                app:trackCornerRadius="4dp" />
+
+        </LinearLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Checklist Items -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_checklist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingTop="@dimen/spacing_16"
+        android:paddingStart="@dimen/spacing_16"
+        android:paddingEnd="@dimen/spacing_16"
+        android:paddingBottom="@dimen/spacing_80"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/item_checklist_task" />
+
+    <!-- Empty State -->
+    <LinearLayout
+        android:id="@+id/layout_empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="@dimen/spacing_32"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <ImageView
+            android:layout_width="@dimen/icon_size_extra_large"
+            android:layout_height="@dimen/icon_size_extra_large"
+            android:src="@drawable/ic_checklist_24dp"
+            android:tint="?attr/colorOnSurfaceVariant"
+            android:alpha="0.6"
+            android:layout_marginBottom="@dimen/spacing_16" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No tasks yet"
+            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+            android:textColor="@color/md_theme_light_onBackground"
+            android:layout_marginBottom="@dimen/spacing_8" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create your first task to get started"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:gravity="center"
+            android:layout_marginBottom="@dimen/spacing_24" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_create_first_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create Task"
+            style="@style/Widget.VEB_APP.FilledButton" />
+
+    </LinearLayout>
+
+    <!-- Floating Action Button -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add_task"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_16"
+        android:contentDescription="Add Task"
+        android:src="@drawable/ic_add_24dp"
+        app:backgroundTint="?attr/colorSecondary"
+        app:tint="?attr/colorOnSecondary"
+        app:fabSize="normal"
+        app:layout_anchor="@id/rv_checklist"
+        app:layout_anchorGravity="bottom|end" />
+
+        <!-- Legacy TextView for Java compatibility -->
+        <TextView
+            android:id="@+id/text_checklist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_checklist"
+            android:visibility="gone" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:background="@color/md_theme_light_background"
-    tools:context=".ui.budget.BudgetFragment">
+    tools:context=".ui.home.HomeFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,7 +14,7 @@
         android:orientation="vertical"
         android:padding="@dimen/spacing_16">
 
-        <!-- Budget Overview Card -->
+        <!-- Welcome Header -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,69 +33,28 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Monthly Budget"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:text="Good Morning!"
+                    android:textAppearance="?attr/textAppearanceHeadlineMedium"
                     android:textColor="?attr/colorOnPrimaryContainer"
                     android:layout_marginBottom="@dimen/spacing_8" />
 
                 <TextView
-                    android:id="@+id/tv_budget_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$2,500.00"
-                    android:textAppearance="?attr/textAppearanceHeadlineLarge"
+                    android:text="Welcome to your personal dashboard"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
                     android:textColor="?attr/colorOnPrimaryContainer"
-                    android:layout_marginBottom="@dimen/spacing_12" />
-
-                <!-- Budget Progress -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Spent: $1,875.00"
-                        android:textAppearance="?attr/textAppearanceBodyMedium"
-                        android:textColor="?attr/colorOnPrimaryContainer"
-                        android:alpha="0.8" />
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="75%"
-                        android:textAppearance="?attr/textAppearanceTitleSmall"
-                        android:textColor="?attr/colorOnPrimaryContainer" />
-
-                </LinearLayout>
-
-                <com.google.android.material.progressindicator.LinearProgressIndicator
-                    android:id="@+id/progress_budget"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/progress_bar_height_thick"
-                    android:progress="75"
-                    app:indicatorColor="?attr/colorPrimary"
-                    app:trackColor="?attr/colorOnPrimaryContainer"
-                    app:trackThickness="8dp"
-                    app:trackCornerRadius="4dp"
-                    android:layout_marginTop="@dimen/spacing_8" />
+                    android:alpha="0.8" />
 
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Quick Stats -->
+        <!-- Quick Actions Grid -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Quick Stats"
+            android:text="Quick Actions"
             android:textAppearance="?attr/textAppearanceTitleLarge"
             android:textColor="@color/md_theme_light_onBackground"
             android:layout_marginBottom="@dimen/spacing_12" />
@@ -106,16 +65,20 @@
             android:columnCount="2"
             android:layout_marginBottom="@dimen/spacing_24">
 
-            <!-- Income Card -->
+            <!-- Notes Card -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_notes"
                 android:layout_width="0dp"
-                android:layout_height="120dp"
+                android:layout_height="@dimen/dashboard_card_height"
                 android:layout_columnWeight="1"
                 android:layout_margin="@dimen/spacing_8"
                 app:cardBackgroundColor="?attr/colorSurface"
                 app:cardCornerRadius="@dimen/corner_radius_large"
                 app:cardElevation="@dimen/elevation_2"
-                app:strokeWidth="0dp">
+                app:strokeWidth="0dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:rippleColor="?attr/colorPrimary">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -124,37 +87,39 @@
                     android:gravity="center"
                     android:padding="@dimen/spacing_16">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Income"
-                        android:textAppearance="?attr/textAppearanceBodyMedium"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:layout_marginBottom="@dimen/spacing_4" />
+                    <ImageView
+                        android:layout_width="@dimen/icon_size_large"
+                        android:layout_height="@dimen/icon_size_large"
+                        android:src="@drawable/ic_notes_24dp"
+                        android:tint="?attr/colorPrimary"
+                        android:layout_marginBottom="@dimen/spacing_12" />
 
                     <TextView
-                        android:id="@+id/tv_income"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="$3,200"
-                        android:textAppearance="?attr/textAppearanceTitleLarge"
-                        android:textColor="@color/success"
+                        android:text="Notes"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?attr/colorOnSurface"
                         android:gravity="center" />
 
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Expenses Card -->
+            <!-- Checklist Card -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_checklist"
                 android:layout_width="0dp"
-                android:layout_height="120dp"
+                android:layout_height="@dimen/dashboard_card_height"
                 android:layout_columnWeight="1"
                 android:layout_margin="@dimen/spacing_8"
                 app:cardBackgroundColor="?attr/colorSurface"
                 app:cardCornerRadius="@dimen/corner_radius_large"
                 app:cardElevation="@dimen/elevation_2"
-                app:strokeWidth="0dp">
+                app:strokeWidth="0dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:rippleColor="?attr/colorSecondary">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -163,37 +128,39 @@
                     android:gravity="center"
                     android:padding="@dimen/spacing_16">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Expenses"
-                        android:textAppearance="?attr/textAppearanceBodyMedium"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:layout_marginBottom="@dimen/spacing_4" />
+                    <ImageView
+                        android:layout_width="@dimen/icon_size_large"
+                        android:layout_height="@dimen/icon_size_large"
+                        android:src="@drawable/ic_checklist_24dp"
+                        android:tint="?attr/colorSecondary"
+                        android:layout_marginBottom="@dimen/spacing_12" />
 
                     <TextView
-                        android:id="@+id/tv_expenses"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="$1,875"
-                        android:textAppearance="?attr/textAppearanceTitleLarge"
-                        android:textColor="@color/error"
+                        android:text="Checklist"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?attr/colorOnSurface"
                         android:gravity="center" />
 
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Savings Card -->
+            <!-- Budget Card -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_budget"
                 android:layout_width="0dp"
-                android:layout_height="120dp"
+                android:layout_height="@dimen/dashboard_card_height"
                 android:layout_columnWeight="1"
                 android:layout_margin="@dimen/spacing_8"
                 app:cardBackgroundColor="?attr/colorSurface"
                 app:cardCornerRadius="@dimen/corner_radius_large"
                 app:cardElevation="@dimen/elevation_2"
-                app:strokeWidth="0dp">
+                app:strokeWidth="0dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:rippleColor="?attr/colorTertiary">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -202,37 +169,39 @@
                     android:gravity="center"
                     android:padding="@dimen/spacing_16">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Savings"
-                        android:textAppearance="?attr/textAppearanceBodyMedium"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:layout_marginBottom="@dimen/spacing_4" />
+                    <ImageView
+                        android:layout_width="@dimen/icon_size_large"
+                        android:layout_height="@dimen/icon_size_large"
+                        android:src="@drawable/ic_budget_24dp"
+                        android:tint="?attr/colorTertiary"
+                        android:layout_marginBottom="@dimen/spacing_12" />
 
                     <TextView
-                        android:id="@+id/tv_savings"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="$1,325"
-                        android:textAppearance="?attr/textAppearanceTitleLarge"
-                        android:textColor="@color/info"
+                        android:text="Budget"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?attr/colorOnSurface"
                         android:gravity="center" />
 
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Remaining Card -->
+            <!-- Calendar Card -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_calendar"
                 android:layout_width="0dp"
-                android:layout_height="120dp"
+                android:layout_height="@dimen/dashboard_card_height"
                 android:layout_columnWeight="1"
                 android:layout_margin="@dimen/spacing_8"
                 app:cardBackgroundColor="?attr/colorSurface"
                 app:cardCornerRadius="@dimen/corner_radius_large"
                 app:cardElevation="@dimen/elevation_2"
-                app:strokeWidth="0dp">
+                app:strokeWidth="0dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:rippleColor="?attr/colorPrimary">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -241,21 +210,19 @@
                     android:gravity="center"
                     android:padding="@dimen/spacing_16">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Remaining"
-                        android:textAppearance="?attr/textAppearanceBodyMedium"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:layout_marginBottom="@dimen/spacing_4" />
+                    <ImageView
+                        android:layout_width="@dimen/icon_size_large"
+                        android:layout_height="@dimen/icon_size_large"
+                        android:src="@drawable/ic_calendar_24dp"
+                        android:tint="?attr/colorPrimary"
+                        android:layout_marginBottom="@dimen/spacing_12" />
 
                     <TextView
-                        android:id="@+id/tv_remaining"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="$625"
-                        android:textAppearance="?attr/textAppearanceTitleLarge"
-                        android:textColor="?attr/colorTertiary"
+                        android:text="Calendar"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?attr/colorOnSurface"
                         android:gravity="center" />
 
                 </LinearLayout>
@@ -264,11 +231,11 @@
 
         </androidx.gridlayout.widget.GridLayout>
 
-        <!-- Recent Transactions -->
+        <!-- Recent Activity -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Recent Transactions"
+            android:text="Recent Activity"
             android:textAppearance="?attr/textAppearanceTitleLarge"
             android:textColor="@color/md_theme_light_onBackground"
             android:layout_marginBottom="@dimen/spacing_12" />
@@ -287,7 +254,7 @@
                 android:orientation="vertical"
                 android:padding="@dimen/spacing_16">
 
-                <!-- Transaction Item 1 -->
+                <!-- Activity Item 1 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -298,8 +265,8 @@
                     <ImageView
                         android:layout_width="@dimen/icon_size_medium"
                         android:layout_height="@dimen/icon_size_medium"
-                        android:src="@drawable/ic_budget_24dp"
-                        android:tint="@color/error"
+                        android:src="@drawable/ic_notes_24dp"
+                        android:tint="?attr/colorPrimary"
                         android:layout_marginEnd="@dimen/spacing_12" />
 
                     <LinearLayout
@@ -311,29 +278,22 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Grocery Shopping"
+                            android:text="Created new note"
                             android:textAppearance="?attr/textAppearanceBodyMedium"
                             android:textColor="?attr/colorOnSurface" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Today, 2:30 PM"
+                            android:text="2 hours ago"
                             android:textAppearance="?attr/textAppearanceBodySmall"
                             android:textColor="?attr/colorOnSurfaceVariant" />
 
                     </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="-$85.50"
-                        android:textAppearance="?attr/textAppearanceBodyLarge"
-                        android:textColor="@color/error" />
-
                 </LinearLayout>
 
-                <!-- Transaction Item 2 -->
+                <!-- Activity Item 2 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -344,8 +304,8 @@
                     <ImageView
                         android:layout_width="@dimen/icon_size_medium"
                         android:layout_height="@dimen/icon_size_medium"
-                        android:src="@drawable/ic_budget_24dp"
-                        android:tint="@color/success"
+                        android:src="@drawable/ic_checklist_24dp"
+                        android:tint="?attr/colorSecondary"
                         android:layout_marginEnd="@dimen/spacing_12" />
 
                     <LinearLayout
@@ -357,29 +317,22 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Salary Deposit"
+                            android:text="Completed 3 tasks"
                             android:textAppearance="?attr/textAppearanceBodyMedium"
                             android:textColor="?attr/colorOnSurface" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Yesterday, 9:00 AM"
+                            android:text="5 hours ago"
                             android:textAppearance="?attr/textAppearanceBodySmall"
                             android:textColor="?attr/colorOnSurfaceVariant" />
 
                     </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="+$3,200.00"
-                        android:textAppearance="?attr/textAppearanceBodyLarge"
-                        android:textColor="@color/success" />
-
                 </LinearLayout>
 
-                <!-- Transaction Item 3 -->
+                <!-- Activity Item 3 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -390,7 +343,7 @@
                         android:layout_width="@dimen/icon_size_medium"
                         android:layout_height="@dimen/icon_size_medium"
                         android:src="@drawable/ic_budget_24dp"
-                        android:tint="@color/error"
+                        android:tint="?attr/colorTertiary"
                         android:layout_marginEnd="@dimen/spacing_12" />
 
                     <LinearLayout
@@ -402,25 +355,18 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Gas Station"
+                            android:text="Added expense"
                             android:textAppearance="?attr/textAppearanceBodyMedium"
                             android:textColor="?attr/colorOnSurface" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="2 days ago"
+                            android:text="1 day ago"
                             android:textAppearance="?attr/textAppearanceBodySmall"
                             android:textColor="?attr/colorOnSurfaceVariant" />
 
                     </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="-$42.75"
-                        android:textAppearance="?attr/textAppearanceBodyLarge"
-                        android:textColor="@color/error" />
 
                 </LinearLayout>
 
@@ -428,14 +374,14 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-    </LinearLayout>
+        </LinearLayout>
 
         <!-- Legacy TextView for Java compatibility -->
         <TextView
-            android:id="@+id/text_budget"
+            android:id="@+id/text_home"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/menu_budget"
+            android:text="@string/menu_home"
             android:visibility="gone" />
 
     </ScrollView>

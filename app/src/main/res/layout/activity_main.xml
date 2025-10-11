@@ -26,13 +26,14 @@ across the layout configurations
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:fitsSystemWindows="true"
-            android:background="@color/white"
+            android:background="?attr/colorSurface"
             app:headerLayout="@layout/nav_header_main"
             app:menu="@menu/navigation_drawer"
-            app:itemIconTint="@color/sage_green"
-            app:itemTextColor="@color/black"
+            app:itemIconTint="?attr/colorOnSurface"
+            app:itemTextColor="?attr/colorOnSurface"
             app:itemBackground="@drawable/nav_item_background"
-            app:itemTextAppearance="@style/NavigationItemTextAppearance" />
+            app:itemTextAppearance="@style/NavigationItemTextAppearance"
+            style="@style/NavigationViewStyle" />
 
     </androidx.drawerlayout.widget.DrawerLayout>
 </FrameLayout>

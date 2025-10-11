@@ -2,11 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/sage_green_subheader"
+    android:background="?attr/colorSecondaryContainer"
     android:orientation="horizontal"
     android:gravity="center"
-    android:padding="12dp"
-    android:minHeight="56dp">
+    android:padding="@dimen/spacing_12"
+    android:minHeight="@dimen/component_height_extra_large">
 
     <!-- Page Title -->
     <TextView
@@ -14,9 +14,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Home"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
+        android:textAppearance="?attr/textAppearanceTitleLarge"
+        android:textColor="?attr/colorOnSecondaryContainer"
         android:gravity="center" />
 
 </LinearLayout>

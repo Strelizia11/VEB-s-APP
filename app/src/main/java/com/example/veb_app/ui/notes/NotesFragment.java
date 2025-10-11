@@ -19,6 +19,7 @@ import android.widget.PopupMenu;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.example.veb_app.R;
 import com.example.veb_app.databinding.FragmentNotesBinding;
@@ -55,7 +56,55 @@ public class NotesFragment extends Fragment {
             });
         }
 
+        // Setup search functionality
+        TextInputEditText etSearch = root.findViewById(R.id.et_search);
+        if (etSearch != null) {
+            etSearch.addTextChangedListener(new android.text.TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    searchNotes(s.toString());
+                }
+
+                @Override
+                public void afterTextChanged(android.text.Editable s) {}
+            });
+        }
+
+        // Setup back to home button
+        MaterialButton btnBackToHome = root.findViewById(R.id.btn_back_to_home);
+        if (btnBackToHome != null) {
+            btnBackToHome.setOnClickListener(v -> {
+                // Use the activity's nav controller for consistent navigation
+                if (getActivity() != null) {
+                    androidx.navigation.fragment.NavHostFragment navHostFragment = (androidx.navigation.fragment.NavHostFragment) getActivity().getSupportFragmentManager()
+                            .findFragmentById(R.id.nav_host_fragment_content_main);
+                    if (navHostFragment != null) {
+                        androidx.navigation.NavController navController = navHostFragment.getNavController();
+                        navController.navigate(R.id.nav_home);
+                    }
+                }
+            });
+        }
+
+        // Load existing notes from NotesManager
+        loadExistingNotes();
+        
+        // Show back button if there are notes (indicating user came from home)
+        showBackButtonIfNeeded();
+        
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Reload notes when returning to this fragment
+        loadExistingNotes();
+        // Update back button visibility
+        showBackButtonIfNeeded();
     }
 
     @Override
@@ -221,11 +270,13 @@ public class NotesFragment extends Fragment {
                 existingNote.setTitle(title);
                 existingNote.setBody(body);
                 existingNote.setFormattedBody(formattedBody);
+                NotesManager.getInstance().updateNote(existingNote);
                 updateNoteDisplay(existingNote);
                 Toast.makeText(getContext(), "Note updated: " + title, Toast.LENGTH_SHORT).show();
             } else {
                 // Create new note
                 Note newNote = new Note(title, body, formattedBody);
+                NotesManager.getInstance().addNote(newNote);
                 addNoteToDisplay(newNote);
                 Toast.makeText(getContext(), "Note saved: " + title, Toast.LENGTH_SHORT).show();
             }
@@ -688,6 +739,7 @@ public class NotesFragment extends Fragment {
             
             // Now pin the new note
             note.setPinned(true);
+            NotesManager.getInstance().updateNote(note);
             
             // Remove the old container and create a new one with updated pin status
             notesContainer.removeView(noteContainer);
@@ -700,6 +752,7 @@ public class NotesFragment extends Fragment {
         } else {
             // Unpinning the note
             note.setPinned(false);
+            NotesManager.getInstance().updateNote(note);
             
             // Remove the old container and create a new one with updated pin status
             notesContainer.removeView(noteContainer);
@@ -722,6 +775,7 @@ public class NotesFragment extends Fragment {
                     
                     // Unpin the existing note
                     existingNote.setPinned(false);
+                    NotesManager.getInstance().updateNote(existingNote);
                     
                     // Remove the old container and create a new one
                     notesContainer.removeView(child);
@@ -733,6 +787,90 @@ public class NotesFragment extends Fragment {
                     break; // Only one note can be pinned at a time
                 }
             }
+        }
+    }
+
+    private void searchNotes(String query) {
+        if (binding == null) return;
+        
+        LinearLayout notesContainer = binding.getRoot().findViewById(R.id.notes_container);
+        if (notesContainer == null) return;
+        
+        // If search query is empty, show all notes
+        if (query.trim().isEmpty()) {
+            for (int i = 0; i < notesContainer.getChildCount(); i++) {
+                View child = notesContainer.getChildAt(i);
+                child.setVisibility(View.VISIBLE);
+            }
+            return;
+        }
+        
+        // Search through notes and hide/show based on query
+        String searchQuery = query.toLowerCase().trim();
+        for (int i = 0; i < notesContainer.getChildCount(); i++) {
+            View child = notesContainer.getChildAt(i);
+            if (child.getTag() instanceof Note) {
+                Note note = (Note) child.getTag();
+                String title = note.getTitle().toLowerCase();
+                String body = note.getBody().toLowerCase();
+                
+                // Show note if title or body contains search query
+                if (title.contains(searchQuery) || body.contains(searchQuery)) {
+                    child.setVisibility(View.VISIBLE);
+                } else {
+                    child.setVisibility(View.GONE);
+                }
+            }
+        }
+    }
+
+    private void loadExistingNotes() {
+        if (binding == null) return;
+        
+        LinearLayout notesContainer = binding.getRoot().findViewById(R.id.notes_container);
+        if (notesContainer == null) return;
+        
+        // Clear existing notes from the container
+        notesContainer.removeAllViews();
+        
+        // Get all notes from NotesManager
+        java.util.List<Note> allNotes = NotesManager.getInstance().getAllNotes();
+        
+        if (allNotes.isEmpty()) {
+            // Show empty state
+            binding.textNotes.setVisibility(View.VISIBLE);
+            return;
+        }
+        
+        // Hide default text
+        binding.textNotes.setVisibility(View.GONE);
+        
+        // Sort notes: pinned first, then by ID (most recent first)
+        java.util.List<Note> sortedNotes = new java.util.ArrayList<>(allNotes);
+        sortedNotes.sort((note1, note2) -> {
+            // Pinned notes first
+            if (note1.isPinned() && !note2.isPinned()) return -1;
+            if (!note1.isPinned() && note2.isPinned()) return 1;
+            
+            // Then by ID (most recent first)
+            return Long.compare(note2.getId(), note1.getId());
+        });
+        
+        // Add notes to container in sorted order
+        for (Note note : sortedNotes) {
+            View noteContainer = createNoteContainer(note);
+            notesContainer.addView(noteContainer);
+        }
+    }
+
+    private void showBackButtonIfNeeded() {
+        if (binding == null) return;
+        
+        MaterialButton btnBackToHome = binding.getRoot().findViewById(R.id.btn_back_to_home);
+        if (btnBackToHome != null) {
+            // Always show back button - user can navigate back to home from notes
+            // This ensures the side nav Home button and back button both work
+            btnBackToHome.setVisibility(View.VISIBLE);
         }
     }
 }

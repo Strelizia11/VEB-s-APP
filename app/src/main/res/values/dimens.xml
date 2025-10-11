@@ -1,4 +1,5 @@
 <resources>
+    <!-- Legacy dimensions -->
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="fragment_horizontal_margin">16dp</dimen>
     <dimen name="item_transform_image_length">48dp</dimen>
@@ -6,4 +7,93 @@
     <dimen name="reflow_text_block_horizontal_gap">8dp</dimen>
     <dimen name="reflow_text_title_size">22sp</dimen>
     <dimen name="reflow_text_description_size">13sp</dimen>
+    
+    <!-- Material 3 Spacing System (8dp grid) -->
+    <dimen name="spacing_4">4dp</dimen>
+    <dimen name="spacing_8">8dp</dimen>
+    <dimen name="spacing_12">12dp</dimen>
+    <dimen name="spacing_16">16dp</dimen>
+    <dimen name="spacing_20">20dp</dimen>
+    <dimen name="spacing_24">24dp</dimen>
+    <dimen name="spacing_32">32dp</dimen>
+    <dimen name="spacing_40">40dp</dimen>
+    <dimen name="spacing_48">48dp</dimen>
+    <dimen name="spacing_56">56dp</dimen>
+    <dimen name="spacing_64">64dp</dimen>
+    <dimen name="spacing_72">72dp</dimen>
+    <dimen name="spacing_80">80dp</dimen>
+    
+    <!-- Component Sizes -->
+    <dimen name="component_height_small">32dp</dimen>
+    <dimen name="component_height_medium">40dp</dimen>
+    <dimen name="component_height_large">48dp</dimen>
+    <dimen name="component_height_extra_large">56dp</dimen>
+    
+    <!-- Corner Radius -->
+    <dimen name="corner_radius_small">8dp</dimen>
+    <dimen name="corner_radius_medium">12dp</dimen>
+    <dimen name="corner_radius_large">16dp</dimen>
+    <dimen name="corner_radius_extra_large">20dp</dimen>
+    <dimen name="corner_radius_card">16dp</dimen>
+    <dimen name="corner_radius_button">12dp</dimen>
+    
+    <!-- Elevation -->
+    <dimen name="elevation_1">1dp</dimen>
+    <dimen name="elevation_2">2dp</dimen>
+    <dimen name="elevation_3">3dp</dimen>
+    <dimen name="elevation_4">4dp</dimen>
+    <dimen name="elevation_6">6dp</dimen>
+    <dimen name="elevation_8">8dp</dimen>
+    <dimen name="elevation_12">12dp</dimen>
+    <dimen name="elevation_16">16dp</dimen>
+    <dimen name="elevation_24">24dp</dimen>
+    
+    <!-- Typography -->
+    <dimen name="text_size_display_large">57sp</dimen>
+    <dimen name="text_size_display_medium">45sp</dimen>
+    <dimen name="text_size_display_small">36sp</dimen>
+    <dimen name="text_size_headline_large">32sp</dimen>
+    <dimen name="text_size_headline_medium">28sp</dimen>
+    <dimen name="text_size_headline_small">24sp</dimen>
+    <dimen name="text_size_title_large">22sp</dimen>
+    <dimen name="text_size_title_medium">16sp</dimen>
+    <dimen name="text_size_title_small">14sp</dimen>
+    <dimen name="text_size_body_large">16sp</dimen>
+    <dimen name="text_size_body_medium">14sp</dimen>
+    <dimen name="text_size_body_small">12sp</dimen>
+    <dimen name="text_size_label_large">14sp</dimen>
+    <dimen name="text_size_label_medium">12sp</dimen>
+    <dimen name="text_size_label_small">11sp</dimen>
+    
+    <!-- Icon Sizes -->
+    <dimen name="icon_size_small">16dp</dimen>
+    <dimen name="icon_size_medium">24dp</dimen>
+    <dimen name="icon_size_large">32dp</dimen>
+    <dimen name="icon_size_extra_large">48dp</dimen>
+    
+    <!-- Card Dimensions -->
+    <dimen name="card_min_height">120dp</dimen>
+    <dimen name="card_padding">16dp</dimen>
+    <dimen name="card_margin">8dp</dimen>
+    <dimen name="card_elevation">2dp</dimen>
+    
+    <!-- List Item Dimensions -->
+    <dimen name="list_item_height">72dp</dimen>
+    <dimen name="list_item_padding">16dp</dimen>
+    <dimen name="list_item_icon_size">24dp</dimen>
+    
+    <!-- Navigation Dimensions -->
+    <dimen name="nav_header_height">160dp</dimen>
+    <dimen name="nav_item_height">48dp</dimen>
+    <dimen name="nav_item_padding">16dp</dimen>
+    
+    <!-- Dashboard Grid -->
+    <dimen name="dashboard_card_width">160dp</dimen>
+    <dimen name="dashboard_card_height">120dp</dimen>
+    <dimen name="dashboard_grid_spacing">16dp</dimen>
+    
+    <!-- Progress Indicators -->
+    <dimen name="progress_circle_size">48dp</dimen>
+    <dimen name="progress_bar_height">4dp</dimen>
+    <dimen name="progress_bar_height_thick">8dp</dimen>
 </resources>

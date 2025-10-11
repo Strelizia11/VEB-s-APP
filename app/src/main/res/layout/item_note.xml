@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/spacing_16"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:cardCornerRadius="@dimen/corner_radius_large"
+    app:cardElevation="@dimen/elevation_2"
+    app:strokeWidth="0dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:rippleColor="?attr/colorPrimaryContainer">
+
+    <!-- Note Container -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_20">
+
+        <!-- Title Note Container -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="?attr/colorPrimaryContainer"
+            android:padding="@dimen/spacing_16"
+            android:layout_marginBottom="@dimen/spacing_16"
+            android:minHeight="60dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_note_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Note Title"
+                    android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                    android:textColor="?attr/colorOnPrimaryContainer"
+                    android:textStyle="bold"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:layout_marginBottom="@dimen/spacing_4" />
+
+                <TextView
+                    android:id="@+id/tv_note_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Dec 15, 2024"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="?attr/colorOnPrimaryContainer"
+                    android:alpha="0.8" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/iv_pin"
+                    android:layout_width="@dimen/icon_size_medium"
+                    android:layout_height="@dimen/icon_size_medium"
+                    android:src="@drawable/ic_pin_24dp"
+                    android:tint="?attr/colorOnPrimaryContainer"
+                    android:contentDescription="Pinned Note"
+                    android:layout_marginEnd="@dimen/spacing_8"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <ImageView
+                    android:id="@+id/iv_more"
+                    android:layout_width="@dimen/icon_size_medium"
+                    android:layout_height="@dimen/icon_size_medium"
+                    android:src="@drawable/ic_more_vert_24dp"
+                    android:tint="?attr/colorOnPrimaryContainer"
+                    android:contentDescription="More Options"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="@dimen/spacing_4" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Note Body -->
+        <TextView
+            android:id="@+id/tv_note_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="This is a preview of the note content. It can span multiple lines but will be truncated to fit the available space."
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="?attr/colorOnSurface"
+            android:lineSpacingExtra="4dp"
+            android:maxLines="4"
+            android:ellipsize="end"
+            android:layout_marginBottom="@dimen/spacing_12" />
+
+        <!-- Note Footer -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Category"
+                style="@style/Widget.Material3.Chip.Assist"
+                android:textColor="?attr/colorOnSecondaryContainer"
+                app:chipBackgroundColor="?attr/colorSecondaryContainer"
+                android:layout_marginEnd="@dimen/spacing_8"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tap to view"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:alpha="0.7" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

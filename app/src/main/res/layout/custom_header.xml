@@ -2,22 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/sage_green"
+    android:background="?attr/colorPrimary"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:padding="16dp">
+    android:padding="@dimen/spacing_16"
+    android:elevation="@dimen/elevation_2">
 
     <!-- Burger Menu Button -->
     <ImageButton
         android:id="@+id/btn_burger_menu"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_menu_24dp"
         android:contentDescription="Menu"
-        android:tint="@color/white"
+        android:tint="?attr/colorOnPrimary"
         android:scaleType="centerInside"
-        android:padding="16dp" />
+        android:padding="@dimen/spacing_12" />
 
     <!-- Spacer to push title to the right -->
     <View
@@ -31,11 +32,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="VEB"
-        android:textColor="@color/white"
-        android:textSize="50sp"
-        android:textStyle="bold"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="16dp" />
+        android:textAppearance="?attr/textAppearanceHeadlineLarge"
+        android:textColor="?attr/colorOnPrimary"
+        android:layout_marginTop="@dimen/spacing_8"
+        android:layout_marginBottom="@dimen/spacing_8"
+        android:layout_marginEnd="@dimen/spacing_16" />
 
 </LinearLayout>

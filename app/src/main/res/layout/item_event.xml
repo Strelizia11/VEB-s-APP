@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/spacing_8"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:cardCornerRadius="@dimen/corner_radius_large"
+    app:cardElevation="@dimen/elevation_2"
+    app:strokeWidth="0dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:rippleColor="?attr/colorTertiary">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="@dimen/spacing_16">
+
+        <!-- Color Indicator -->
+        <View
+            android:id="@+id/view_color_indicator"
+            android:layout_width="4dp"
+            android:layout_height="match_parent"
+            android:background="@color/md_theme_light_primary"
+            android:layout_marginEnd="@dimen/spacing_12" />
+
+        <!-- Event Content -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Event Title -->
+            <TextView
+                android:id="@+id/tv_event_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Team Meeting"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:textColor="?attr/colorOnSurface"
+                android:layout_marginBottom="@dimen/spacing_4" />
+
+            <!-- Event Time -->
+            <TextView
+                android:id="@+id/tv_event_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2:00 PM - 3:00 PM"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:layout_marginBottom="@dimen/spacing_4" />
+
+            <!-- Event Location -->
+            <TextView
+                android:id="@+id/tv_event_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Conference Room A"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+
+        </LinearLayout>
+
+        <!-- More Options -->
+        <ImageView
+            android:id="@+id/iv_more"
+            android:layout_width="@dimen/icon_size_small"
+            android:layout_height="@dimen/icon_size_small"
+            android:src="@drawable/ic_more_vert_24dp"
+            android:tint="?attr/colorOnSurfaceVariant"
+            android:layout_marginStart="@dimen/spacing_8"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="@dimen/spacing_4"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

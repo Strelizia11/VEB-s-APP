@@ -1,55 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/md_theme_light_background"
     tools:context=".ui.notes.NotesFragment">
 
+    <!-- Search Bar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        app:elevation="@dimen/elevation_2">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_16">
+
+            <!-- Back to Home Button (hidden by default) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_back_to_home"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_12"
+                android:text="← Back to Home"
+                android:visibility="gone"
+                app:cornerRadius="@dimen/corner_radius_medium" />
+
+            <!-- Search Field -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Search notes..."
+                app:startIconDrawable="@drawable/ic_search_24dp"
+                app:boxBackgroundMode="filled"
+                app:boxBackgroundColor="?attr/colorSurfaceVariant"
+                app:boxCornerRadiusTopStart="@dimen/corner_radius_medium"
+                app:boxCornerRadiusTopEnd="@dimen/corner_radius_medium"
+                app:boxCornerRadiusBottomStart="@dimen/corner_radius_medium"
+                app:boxCornerRadiusBottomEnd="@dimen/corner_radius_medium"
+                app:boxStrokeWidth="0dp"
+                style="@style/Widget.Material3.TextInputLayout.FilledBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:textColorHint="?attr/colorOnSurfaceVariant" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+        </LinearLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Notes List -->
     <ScrollView
-        android:id="@+id/scroll_view_notes"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:clipToPadding="false"
+        android:paddingTop="@dimen/spacing_16"
+        android:paddingStart="@dimen/spacing_16"
+        android:paddingEnd="@dimen/spacing_16"
+        android:paddingBottom="@dimen/spacing_80"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <!-- Notes container for displaying saved notes -->
         <LinearLayout
             android:id="@+id/notes_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp">
-
-            <TextView
-                android:id="@+id/text_notes"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:textAlignment="center"
-                android:textSize="20sp"
-                android:textColor="@color/sage_green"
-                android:text="No notes yet. Tap the + button to create your first note!" />
-
-        </LinearLayout>
+            android:orientation="vertical" />
 
     </ScrollView>
 
+    <!-- Empty State -->
+    <LinearLayout
+        android:id="@+id/layout_empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="@dimen/spacing_32"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <ImageView
+            android:layout_width="@dimen/icon_size_extra_large"
+            android:layout_height="@dimen/icon_size_extra_large"
+            android:src="@drawable/ic_notes_24dp"
+            android:tint="?attr/colorOnSurfaceVariant"
+            android:alpha="0.6"
+            android:layout_marginBottom="@dimen/spacing_16" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No notes yet"
+            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+            android:textColor="@color/md_theme_light_onBackground"
+            android:layout_marginBottom="@dimen/spacing_8" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create your first note by tapping the + button"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:gravity="center"
+            android:layout_marginBottom="@dimen/spacing_24" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_create_first_note"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create Note"
+            style="@style/Widget.VEB_APP.FilledButton" />
+
+    </LinearLayout>
+
+    <!-- Floating Action Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add_note"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_margin="@dimen/spacing_16"
         android:contentDescription="Add Note"
         android:src="@drawable/ic_add_24dp"
-        app:backgroundTint="@color/sage_green"
-        app:tint="@color/white"
+        app:backgroundTint="?attr/colorPrimary"
+        app:tint="?attr/colorOnPrimary"
         app:fabSize="normal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_gravity="bottom|end" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Legacy TextView for Java compatibility -->
+        <TextView
+            android:id="@+id/text_notes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_notes"
+            android:visibility="gone" />
+
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>

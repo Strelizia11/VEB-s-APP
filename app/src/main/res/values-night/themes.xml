@@ -1,16 +1,79 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.VEB_APP" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+    <!-- Dark theme -->
+    <style name="Theme.VEB_APP" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Material 3 Dark Color System -->
+        <item name="colorPrimary">@color/md_theme_dark_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_dark_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_dark_onPrimaryContainer</item>
+        
+        <item name="colorSecondary">@color/md_theme_dark_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_dark_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_dark_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_dark_onSecondaryContainer</item>
+        
+        <item name="colorTertiary">@color/md_theme_dark_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_dark_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_dark_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_dark_onTertiaryContainer</item>
+        
+        <item name="colorError">@color/md_theme_dark_error</item>
+        <item name="colorOnError">@color/md_theme_dark_onError</item>
+        <item name="colorErrorContainer">@color/md_theme_dark_errorContainer</item>
+        <item name="colorOnErrorContainer">@color/md_theme_dark_onErrorContainer</item>
+        
+        <item name="colorSurface">@color/md_theme_dark_surface</item>
+        <item name="colorOnSurface">@color/md_theme_dark_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_dark_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_dark_onSurfaceVariant</item>
+        
+        <item name="android:colorBackground">@color/md_theme_dark_background</item>
+        
+        <item name="colorOutline">@color/md_theme_dark_outline</item>
+        <item name="colorOutlineVariant">@color/md_theme_dark_outlineVariant</item>
+        
+        <item name="colorSurfaceInverse">@color/md_theme_dark_inverseSurface</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_dark_inverseOnSurface</item>
+        <item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
+        
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">@color/md_theme_dark_primary</item>
+        <item name="android:windowLightStatusBar">false</item>
+        
+        <!-- Navigation bar color -->
+        <item name="android:navigationBarColor">@color/md_theme_dark_surface</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        
+        <!-- Material 3 Shape System -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.VEB_APP.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.VEB_APP.MediumComponent</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.VEB_APP.LargeComponent</item>
+        
+        <!-- Typography -->
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.VEB_APP.HeadlineLarge</item>
+        <item name="textAppearanceHeadlineMedium">@style/TextAppearance.VEB_APP.HeadlineMedium</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.VEB_APP.HeadlineSmall</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.VEB_APP.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.VEB_APP.TitleMedium</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.VEB_APP.TitleSmall</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.VEB_APP.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.VEB_APP.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.VEB_APP.BodySmall</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.VEB_APP.LabelLarge</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.VEB_APP.LabelMedium</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.VEB_APP.LabelSmall</item>
+    </style>
+
+    <!-- AppBar Overlay Theme -->
+    <style name="Theme.VEB_APP.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColorPrimary">@color/md_theme_dark_onPrimary</item>
+        <item name="android:textColorSecondary">@color/md_theme_dark_onPrimary</item>
+    </style>
+
+    <!-- Popup Overlay Theme -->
+    <style name="Theme.VEB_APP.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="android:textColorPrimary">@color/md_theme_dark_onSurface</item>
+        <item name="android:textColorSecondary">@color/md_theme_dark_onSurfaceVariant</item>
+        <item name="android:background">@color/md_theme_dark_surface</item>
     </style>
 </resources>
