@@ -20,17 +20,6 @@
             android:orientation="vertical"
             android:padding="@dimen/spacing_16">
 
-            <!-- Back to Home Button (hidden by default) -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_back_to_home"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/spacing_12"
-                android:text="← Back to Home"
-                android:visibility="gone"
-                app:cornerRadius="@dimen/corner_radius_medium" />
-
             <!-- Search Field -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"

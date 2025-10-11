@@ -89,18 +89,24 @@ public class HomeFragment extends Fragment {
 
         // Setup View All Notes button
         btnViewAllNotes.setOnClickListener(v -> {
-            // Simulate clicking the Notes menu item in the navigation drawer
+            // Trigger the NavigationView's built-in navigation mechanism
             if (getActivity() != null) {
-                // Get the navigation view from the activity
                 com.google.android.material.navigation.NavigationView navView = getActivity().findViewById(R.id.nav_view);
                 if (navView != null) {
-                    // Find the Notes menu item and simulate a click
                     android.view.MenuItem notesMenuItem = navView.getMenu().findItem(R.id.nav_notes);
                     if (notesMenuItem != null) {
-                        // This should trigger the navigation and update the drawer state
+                        // Trigger the menu item's click event which will use NavigationUI
                         notesMenuItem.setChecked(true);
-                        // Also trigger the navigation programmatically
-                        Navigation.findNavController(root).navigate(R.id.nav_notes);
+                        
+                        // Get the NavController and navigate using NavigationUI
+                        androidx.navigation.fragment.NavHostFragment navHostFragment = 
+                            (androidx.navigation.fragment.NavHostFragment) getActivity().getSupportFragmentManager()
+                                .findFragmentById(R.id.nav_host_fragment_content_main);
+                        if (navHostFragment != null) {
+                            NavController navController = navHostFragment.getNavController();
+                            // Use NavigationUI to handle the navigation properly
+                            androidx.navigation.ui.NavigationUI.onNavDestinationSelected(notesMenuItem, navController);
+                        }
                     }
                 }
             }

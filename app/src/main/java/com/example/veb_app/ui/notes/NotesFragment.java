@@ -31,6 +31,7 @@ public class NotesFragment extends Fragment {
     private boolean isProcessingList = false;
     private boolean isInList = false;
     private boolean isEditingMode = false;
+    
 
     private FragmentNotesBinding binding;
 
@@ -73,27 +74,9 @@ public class NotesFragment extends Fragment {
             });
         }
 
-        // Setup back to home button
-        MaterialButton btnBackToHome = root.findViewById(R.id.btn_back_to_home);
-        if (btnBackToHome != null) {
-            btnBackToHome.setOnClickListener(v -> {
-                // Use the activity's nav controller for consistent navigation
-                if (getActivity() != null) {
-                    androidx.navigation.fragment.NavHostFragment navHostFragment = (androidx.navigation.fragment.NavHostFragment) getActivity().getSupportFragmentManager()
-                            .findFragmentById(R.id.nav_host_fragment_content_main);
-                    if (navHostFragment != null) {
-                        androidx.navigation.NavController navController = navHostFragment.getNavController();
-                        navController.navigate(R.id.nav_home);
-                    }
-                }
-            });
-        }
 
         // Load existing notes from NotesManager
         loadExistingNotes();
-        
-        // Show back button if there are notes (indicating user came from home)
-        showBackButtonIfNeeded();
         
         return root;
     }
@@ -103,8 +86,6 @@ public class NotesFragment extends Fragment {
         super.onResume();
         // Reload notes when returning to this fragment
         loadExistingNotes();
-        // Update back button visibility
-        showBackButtonIfNeeded();
     }
 
     @Override
@@ -863,14 +844,4 @@ public class NotesFragment extends Fragment {
         }
     }
 
-    private void showBackButtonIfNeeded() {
-        if (binding == null) return;
-        
-        MaterialButton btnBackToHome = binding.getRoot().findViewById(R.id.btn_back_to_home);
-        if (btnBackToHome != null) {
-            // Always show back button - user can navigate back to home from notes
-            // This ensures the side nav Home button and back button both work
-            btnBackToHome.setVisibility(View.VISIBLE);
-        }
-    }
 }
