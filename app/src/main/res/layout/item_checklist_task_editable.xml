@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingStart="@dimen/spacing_8"
+    android:paddingEnd="@dimen/spacing_8"
+    android:paddingTop="@dimen/spacing_8"
+    android:paddingBottom="@dimen/spacing_8"
+    android:background="?attr/selectableItemBackground"
+    android:minHeight="40dp">
+
+    <!-- Checkbox -->
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/cb_task"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spacing_8"
+        android:scaleX="1.1"
+        android:scaleY="1.1"
+        app:buttonTint="@color/sage_green"
+        app:useMaterialThemeColors="false" />
+
+    <!-- Editable Task Text -->
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/et_task_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:textSize="16sp"
+        android:textColor="@color/md_theme_light_onSurface"
+        android:hint="Add a task..."
+        android:textColorHint="@color/md_theme_light_onSurfaceVariant"
+        android:inputType="textCapSentences"
+        android:imeOptions="actionDone"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:paddingStart="@dimen/spacing_4"
+        android:paddingEnd="@dimen/spacing_4"
+        android:paddingTop="@dimen/spacing_4"
+        android:paddingBottom="@dimen/spacing_4" />
+
+    <!-- Delete Task Button -->
+    <TextView
+        android:id="@+id/btn_delete_task"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:text="-"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/sage_green"
+        android:gravity="center"
+        android:layout_marginStart="@dimen/spacing_8"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="Delete task"
+        android:visibility="gone" />
+
+</LinearLayout>

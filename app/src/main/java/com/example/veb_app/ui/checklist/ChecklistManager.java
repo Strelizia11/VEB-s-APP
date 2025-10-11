@@ -98,4 +98,18 @@ public class ChecklistManager {
             return Long.compare(checklist2.getId(), checklist1.getId());
         });
     }
+
+    // Method to sort tasks within a checklist: incomplete first, then completed (most recent first within each group)
+    public void sortTasksInChecklist(ChecklistFragment.Checklist checklist) {
+        if (checklist != null && checklist.getTasks() != null) {
+            Collections.sort(checklist.getTasks(), (task1, task2) -> {
+                // Incomplete tasks first
+                if (!task1.isCompleted() && task2.isCompleted()) return -1;
+                if (task1.isCompleted() && !task2.isCompleted()) return 1;
+                
+                // Within same completion status, maintain original order (most recent first)
+                return 0; // Keep original insertion order for tasks
+            });
+        }
+    }
 }

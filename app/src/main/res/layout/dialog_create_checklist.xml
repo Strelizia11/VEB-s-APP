@@ -31,33 +31,52 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Tasks Input -->
-    <com.google.android.material.textfield.TextInputLayout
+    <!-- Tasks Container -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginBottom="@dimen/spacing_16"
+        android:background="?attr/colorSurfaceVariant"
+        android:padding="@dimen/spacing_8"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:id="@+id/tasks_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+    </ScrollView>
+
+    <!-- Add New Task Button -->
+    <LinearLayout
+        android:id="@+id/btn_add_new_task"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="@dimen/spacing_12"
         android:layout_marginBottom="@dimen/spacing_16"
-        android:hint="Add tasks (press Enter for new task)"
-        app:boxBackgroundMode="filled"
-        app:boxBackgroundColor="?attr/colorSurfaceVariant"
-        app:boxCornerRadiusTopStart="@dimen/corner_radius_medium"
-        app:boxCornerRadiusTopEnd="@dimen/corner_radius_medium"
-        app:boxCornerRadiusBottomStart="@dimen/corner_radius_medium"
-        app:boxCornerRadiusBottomEnd="@dimen/corner_radius_medium"
-        app:boxStrokeWidth="0dp"
-        style="@style/Widget.Material3.TextInputLayout.FilledBox">
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_checklist_tasks"
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:inputType="textMultiLine|textCapSentences"
-            android:gravity="top"
-            android:maxLines="10"
-            android:scrollbars="vertical"
-            android:textColorHint="?attr/colorOnSurfaceVariant"
-            android:imeOptions="actionDone" />
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_add_24dp"
+            android:tint="@color/sage_green"
+            android:layout_marginEnd="@dimen/spacing_8" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add new"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="@color/sage_green"
+            android:textSize="16sp" />
+
+    </LinearLayout>
 
     <!-- Button Container -->
     <LinearLayout

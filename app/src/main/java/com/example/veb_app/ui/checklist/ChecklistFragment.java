@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -86,59 +87,82 @@ public class ChecklistFragment extends Fragment {
 
         // Get dialog views
         TextInputEditText etTitle = dialogView.findViewById(R.id.et_checklist_title);
-        TextInputEditText etTasks = dialogView.findViewById(R.id.et_checklist_tasks);
+        LinearLayout tasksContainer = dialogView.findViewById(R.id.tasks_container);
+        LinearLayout btnAddNewTask = dialogView.findViewById(R.id.btn_add_new_task);
         MaterialButton btnSave = dialogView.findViewById(R.id.btn_save);
         MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel);
+
+        // List to track tasks in dialog
+        List<Checklist.Task> dialogTasks = new ArrayList<>();
 
         // Pre-fill fields if editing existing checklist
         if (existingChecklist != null) {
             etTitle.setText(existingChecklist.getTitle());
-            
-            // Convert task list to text format, preserving completion states
-            StringBuilder tasksText = new StringBuilder();
-            for (Checklist.Task task : existingChecklist.getTasks()) {
-                tasksText.append(task.getText()).append("\n");
-            }
-            etTasks.setText(tasksText.toString());
+            dialogTasks.addAll(existingChecklist.getTasks());
         } else {
-            // For new checklist, add a blank line to show empty task indicator
-            etTasks.setText("\n");
+            // For new checklist, add one blank task
+            dialogTasks.add(new Checklist.Task("", false));
         }
+
+        // Populate tasks container
+        refreshTasksInDialog(tasksContainer, dialogTasks, btnAddNewTask);
+
+        // Add new task button
+        btnAddNewTask.setOnClickListener(v -> {
+            dialogTasks.add(new Checklist.Task("", false));
+            refreshTasksInDialog(tasksContainer, dialogTasks, btnAddNewTask);
+            
+            // Focus on the new blank task instead of title
+            if (!dialogTasks.isEmpty()) {
+                View lastTaskView = tasksContainer.getChildAt(tasksContainer.getChildCount() - 1);
+                if (lastTaskView != null) {
+                    TextInputEditText etTaskText = lastTaskView.findViewById(R.id.et_task_text);
+                    if (etTaskText != null) {
+                        etTaskText.requestFocus();
+                        // Show keyboard
+                        if (getActivity() != null) {
+                            android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getActivity().getSystemService(android.content.Context.INPUT_METHOD_SERVICE);
+                            if (imm != null) {
+                                imm.showSoftInput(etTaskText, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
         // Save button
         btnSave.setOnClickListener(v -> {
             String title = etTitle.getText().toString().trim();
-            String tasksText = etTasks.getText().toString().trim();
 
             if (title.isEmpty()) {
                 Toast.makeText(getContext(), "Please enter a checklist title", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            if (tasksText.isEmpty()) {
-                Toast.makeText(getContext(), "Please enter at least one task", Toast.LENGTH_SHORT).show();
-                return;
+            // Filter out empty tasks
+            List<Checklist.Task> validTasks = new ArrayList<>();
+            for (Checklist.Task task : dialogTasks) {
+                if (!task.getText().trim().isEmpty()) {
+                    validTasks.add(task);
+                }
             }
 
-            // Parse tasks from text
-            List<Checklist.Task> tasks;
-            if (existingChecklist != null) {
-                // Preserve completion states when editing
-                tasks = parseTasksFromTextWithCompletion(tasksText, existingChecklist);
-            } else {
-                tasks = parseTasksFromText(tasksText);
+            if (validTasks.isEmpty()) {
+                Toast.makeText(getContext(), "Please enter at least one task", Toast.LENGTH_SHORT).show();
+                return;
             }
             
             if (existingChecklist != null) {
                 // Update existing checklist
                 existingChecklist.setTitle(title);
-                existingChecklist.setTasks(tasks);
+                existingChecklist.setTasks(validTasks);
                 ChecklistManager.getInstance().updateChecklist(existingChecklist);
                 updateChecklistDisplay(existingChecklist);
                 Toast.makeText(getContext(), "Checklist updated: " + title, Toast.LENGTH_SHORT).show();
             } else {
                 // Create new checklist
-                Checklist newChecklist = new Checklist(title, tasks);
+                Checklist newChecklist = new Checklist(title, validTasks);
                 ChecklistManager.getInstance().addChecklist(newChecklist);
                 addChecklistToDisplay(newChecklist);
                 Toast.makeText(getContext(), "Checklist saved: " + title, Toast.LENGTH_SHORT).show();
@@ -192,6 +216,97 @@ public class ChecklistFragment extends Fragment {
         return tasks;
     }
 
+    private void refreshTasksInDialog(LinearLayout tasksContainer, List<Checklist.Task> dialogTasks, LinearLayout btnAddNewTask) {
+        tasksContainer.removeAllViews();
+        
+        for (int i = 0; i < dialogTasks.size(); i++) {
+            Checklist.Task task = dialogTasks.get(i);
+            View taskView = createDialogTaskView(task, dialogTasks, tasksContainer, btnAddNewTask, i);
+            tasksContainer.addView(taskView);
+        }
+    }
+
+    private View createDialogTaskView(Checklist.Task task, List<Checklist.Task> dialogTasks, LinearLayout tasksContainer, LinearLayout btnAddNewTask, int index) {
+        View taskView = LayoutInflater.from(getContext()).inflate(R.layout.item_checklist_task_editable, null);
+        
+        CheckBox cbTask = taskView.findViewById(R.id.cb_task);
+        TextInputEditText etTaskText = taskView.findViewById(R.id.et_task_text);
+        TextView btnDeleteTask = taskView.findViewById(R.id.btn_delete_task);
+        
+        // Setup checkbox
+        cbTask.setChecked(task.isCompleted());
+        cbTask.setEnabled(true);
+        cbTask.setAlpha(1.0f);
+        
+        // Setup text input
+        etTaskText.setText(task.getText());
+        
+        // Setup delete button
+        btnDeleteTask.setOnClickListener(v -> {
+            // Remove the task from the list
+            dialogTasks.remove(task);
+            // Refresh the dialog to update indices
+            refreshTasksInDialog(tasksContainer, dialogTasks, btnAddNewTask);
+        });
+        
+        // Function to update delete button visibility
+        android.util.Log.d("ChecklistFragment", "Initial task text: '" + task.getText() + "'");
+        updateDeleteButtonVisibility(btnDeleteTask, task.getText());
+        
+        // Set up text change listener
+        etTaskText.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                task.setText(s.toString());
+                // Update delete button visibility based on text content
+                updateDeleteButtonVisibility(btnDeleteTask, s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {}
+        });
+        
+        // Set up checkbox listener
+        cbTask.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            task.setCompleted(isChecked);
+        });
+        
+        // Handle enter key to add new task
+        etTaskText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE || 
+                (event != null && event.getKeyCode() == android.view.KeyEvent.KEYCODE_ENTER && event.getAction() == android.view.KeyEvent.ACTION_DOWN)) {
+                
+                // Add new task after current one
+                dialogTasks.add(index + 1, new Checklist.Task("", false));
+                refreshTasksInDialog(tasksContainer, dialogTasks, btnAddNewTask);
+                
+                // Focus on the new task
+                View newTaskView = tasksContainer.getChildAt(index + 1);
+                if (newTaskView != null) {
+                    TextInputEditText newEtTaskText = newTaskView.findViewById(R.id.et_task_text);
+                    newEtTaskText.requestFocus();
+                }
+                return true;
+            }
+            return false;
+        });
+        
+        return taskView;
+    }
+
+    private void updateDeleteButtonVisibility(TextView btnDeleteTask, String taskText) {
+        if (taskText != null && !taskText.trim().isEmpty()) {
+            // Show minus button when user has typed something
+            btnDeleteTask.setVisibility(View.VISIBLE);
+        } else {
+            // Hide minus button when task is empty
+            btnDeleteTask.setVisibility(View.GONE);
+        }
+    }
+
     private void addChecklistToDisplay(Checklist checklist) {
         // Hide the default text
         binding.textChecklist.setVisibility(View.GONE);
@@ -237,6 +352,7 @@ public class ChecklistFragment extends Fragment {
         com.google.android.material.card.MaterialCardView cardChecklist = cardView.findViewById(R.id.card_checklist);
         TextView tvTitle = cardView.findViewById(R.id.tv_checklist_title);
         LinearLayout tasksContainer = cardView.findViewById(R.id.tasks_container);
+        LinearLayout btnAddTask = cardView.findViewById(R.id.btn_add_task);
         LinearLayout progressContainer = cardView.findViewById(R.id.progress_container);
         TextView tvProgressText = cardView.findViewById(R.id.tv_progress_text);
         com.google.android.material.progressindicator.LinearProgressIndicator progressBar = cardView.findViewById(R.id.progress_bar);
@@ -251,13 +367,16 @@ public class ChecklistFragment extends Fragment {
             cardChecklist.setCardBackgroundColor(getResources().getColor(R.color.md_theme_light_surface));
         }
 
+        // Setup add task button
+        btnAddTask.setOnClickListener(v -> {
+            addNewTaskToChecklist(checklist, tasksContainer, btnAddTask);
+        });
+
         // Add tasks to container
         List<Checklist.Task> sortedTasks = new ArrayList<>(checklist.getTasks());
-        // Sort tasks: incomplete first, then completed
-        sortedTasks.sort((task1, task2) -> {
-            if (task1.isCompleted() == task2.isCompleted()) return 0;
-            return task1.isCompleted() ? 1 : -1;
-        });
+        // Sort tasks using ChecklistManager method
+        ChecklistManager.getInstance().sortTasksInChecklist(checklist);
+        sortedTasks = checklist.getTasks();
 
         // Clear existing tasks
         tasksContainer.removeAllViews();
@@ -265,6 +384,13 @@ public class ChecklistFragment extends Fragment {
         for (Checklist.Task task : sortedTasks) {
             View taskView = createTaskView(task, checklist);
             tasksContainer.addView(taskView);
+        }
+
+        // Show add task button if there are tasks or if checklist is empty
+        if (!checklist.getTasks().isEmpty()) {
+            btnAddTask.setVisibility(View.VISIBLE);
+        } else {
+            btnAddTask.setVisibility(View.VISIBLE);
         }
 
         // Show progress if there are tasks
@@ -336,6 +462,101 @@ public class ChecklistFragment extends Fragment {
                 updateChecklistDisplay(checklist);
             });
         }
+        
+        return taskView;
+    }
+
+    private void addNewTaskToChecklist(Checklist checklist, LinearLayout tasksContainer, LinearLayout btnAddTask) {
+        // Create a new empty task
+        Checklist.Task newTask = new Checklist.Task("", false);
+        checklist.getTasks().add(newTask);
+        
+        // Create editable task view
+        View editableTaskView = createEditableTaskView(newTask, checklist, tasksContainer, btnAddTask);
+        
+        // Add to tasks container
+        tasksContainer.addView(editableTaskView);
+        
+        // Hide add button temporarily
+        btnAddTask.setVisibility(View.GONE);
+        
+        // Focus on the text input
+        TextInputEditText etTaskText = editableTaskView.findViewById(R.id.et_task_text);
+        etTaskText.requestFocus();
+        
+        // Show keyboard
+        if (getActivity() != null) {
+            android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getActivity().getSystemService(android.content.Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(etTaskText, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
+            }
+        }
+    }
+
+    private View createEditableTaskView(Checklist.Task task, Checklist checklist, LinearLayout tasksContainer, LinearLayout btnAddTask) {
+        View taskView = LayoutInflater.from(getContext()).inflate(R.layout.item_checklist_task_editable, null);
+        
+        CheckBox cbTask = taskView.findViewById(R.id.cb_task);
+        TextInputEditText etTaskText = taskView.findViewById(R.id.et_task_text);
+        
+        // Setup checkbox
+        cbTask.setChecked(task.isCompleted());
+        cbTask.setEnabled(true);
+        cbTask.setAlpha(1.0f);
+        
+        // Setup text input
+        etTaskText.setText(task.getText());
+        
+        // Set up text change listener
+        etTaskText.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                task.setText(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {}
+        });
+        
+        // Set up checkbox listener
+        cbTask.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            task.setCompleted(isChecked);
+            ChecklistManager.getInstance().updateChecklist(checklist);
+            updateChecklistDisplay(checklist);
+        });
+        
+        // Handle enter key and focus loss
+        etTaskText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE || 
+                (event != null && event.getKeyCode() == android.view.KeyEvent.KEYCODE_ENTER && event.getAction() == android.view.KeyEvent.ACTION_DOWN)) {
+                
+                // If task has text, add a new empty task
+                if (!task.getText().trim().isEmpty()) {
+                    addNewTaskToChecklist(checklist, tasksContainer, btnAddTask);
+                }
+                return true;
+            }
+            return false;
+        });
+        
+        // Handle focus loss
+        etTaskText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                // If task is empty, remove it
+                if (task.getText().trim().isEmpty()) {
+                    checklist.getTasks().remove(task);
+                    tasksContainer.removeView(taskView);
+                    ChecklistManager.getInstance().updateChecklist(checklist);
+                    updateChecklistDisplay(checklist);
+                } else {
+                    // Show add button again
+                    btnAddTask.setVisibility(View.VISIBLE);
+                }
+            }
+        });
         
         return taskView;
     }

@@ -93,6 +93,109 @@
         android:padding="@dimen/spacing_16"
         android:visibility="gone" />
 
+    <!-- Featured Checklist Section -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Featured Checklist"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/md_theme_light_onBackground"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Featured Checklist Container -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_featured_checklist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:cardBackgroundColor="?attr/colorSurface"
+        app:cardCornerRadius="@dimen/corner_radius_large"
+        app:cardElevation="@dimen/elevation_2"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_16">
+
+            <!-- Checklist Title -->
+            <TextView
+                android:id="@+id/tv_featured_checklist_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Checklist Title"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"
+                android:layout_marginBottom="@dimen/spacing_12" />
+
+            <!-- Progress Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <!-- Progress Text -->
+                    <TextView
+                        android:id="@+id/tv_featured_checklist_progress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2 of 5 completed"
+                        android:textAppearance="?attr/textAppearanceBodyLarge"
+                        android:textColor="?attr/colorOnSurface" />
+
+                </LinearLayout>
+
+                <!-- Progress Circle -->
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/progress_circle_checklist"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:progress="40"
+                    app:indicatorColor="@color/sage_green"
+                    app:trackColor="?attr/colorSurfaceVariant"
+                    app:trackThickness="6dp"
+                    app:indicatorSize="48dp" />
+
+            </LinearLayout>
+
+            <!-- View All Checklists Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_view_all_checklists"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_8"
+                android:layout_gravity="end"
+                android:text="View All Checklists"
+                app:cornerRadius="@dimen/corner_radius_medium" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- No Checklists Message -->
+    <TextView
+        android:id="@+id/tv_no_checklists_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No checklists yet. Create your first checklist!"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:gravity="center"
+        android:padding="@dimen/spacing_16"
+        android:visibility="gone" />
+
     <!-- Legacy TextView for Java compatibility -->
     <TextView
         android:id="@+id/text_home"
