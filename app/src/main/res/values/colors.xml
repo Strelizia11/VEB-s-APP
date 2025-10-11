@@ -17,6 +17,9 @@
     <color name="sage_green_dark">#7A8F6B</color>
     <color name="sage_green_subheader">#8BA075</color>
     
+    <!-- Pinned Checklist Colors -->
+    <color name="pinned_checklist_background">#E8EDE0</color>
+    
     <!-- Material 3 Color System -->
     <color name="md_theme_light_primary">#6B7B5A</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>

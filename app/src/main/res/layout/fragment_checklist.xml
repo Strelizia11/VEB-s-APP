@@ -7,92 +7,24 @@
     android:background="@color/md_theme_light_background"
     tools:context=".ui.checklist.ChecklistFragment">
 
-    <!-- Header with Progress -->
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorSurface"
-        app:elevation="@dimen/elevation_2">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/spacing_16">
-
-            <!-- Progress Overview -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="@dimen/spacing_16">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tv_progress_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="3 of 8 tasks completed"
-                        android:textAppearance="?attr/textAppearanceTitleMedium"
-                        android:textColor="?attr/colorOnSurface" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="37% complete"
-                        android:textAppearance="?attr/textAppearanceBodySmall"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:layout_marginTop="@dimen/spacing_4" />
-
-                </LinearLayout>
-
-                <!-- Progress Circle -->
-                <com.google.android.material.progressindicator.CircularProgressIndicator
-                    android:id="@+id/progress_circle"
-                    android:layout_width="@dimen/progress_circle_size"
-                    android:layout_height="@dimen/progress_circle_size"
-                    android:progress="37"
-                    app:indicatorColor="?attr/colorPrimary"
-                    app:trackColor="?attr/colorSurfaceVariant"
-                    app:trackThickness="6dp"
-                    app:indicatorSize="48dp" />
-
-            </LinearLayout>
-
-            <!-- Progress Bar -->
-            <com.google.android.material.progressindicator.LinearProgressIndicator
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/progress_bar_height_thick"
-                android:progress="37"
-                app:indicatorColor="?attr/colorPrimary"
-                app:trackColor="?attr/colorSurfaceVariant"
-                app:trackThickness="8dp"
-                app:trackCornerRadius="4dp" />
-
-        </LinearLayout>
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <!-- Checklist Items -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_checklist"
+    <!-- Checklists Grid (Google Keep style) -->
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingTop="@dimen/spacing_16"
-        android:paddingStart="@dimen/spacing_16"
-        android:paddingEnd="@dimen/spacing_16"
-        android:paddingBottom="@dimen/spacing_80"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:listitem="@layout/item_checklist_task" />
+        android:paddingTop="@dimen/spacing_8"
+        android:paddingBottom="@dimen/spacing_80">
 
-    <!-- Empty State -->
+        <!-- Grid container for checklists -->
+        <LinearLayout
+            android:id="@+id/checklists_grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+    </ScrollView>
+
+    <!-- Empty State (Google Keep style) -->
     <LinearLayout
         android:id="@+id/layout_empty_state"
         android:layout_width="match_parent"
@@ -100,63 +32,67 @@
         android:orientation="vertical"
         android:gravity="center"
         android:padding="@dimen/spacing_32"
-        android:visibility="gone"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:visibility="gone">
 
         <ImageView
-            android:layout_width="@dimen/icon_size_extra_large"
-            android:layout_height="@dimen/icon_size_extra_large"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:src="@drawable/ic_checklist_24dp"
-            android:tint="?attr/colorOnSurfaceVariant"
-            android:alpha="0.6"
-            android:layout_marginBottom="@dimen/spacing_16" />
+            android:tint="@color/sage_green"
+            android:alpha="0.3"
+            android:layout_marginBottom="@dimen/spacing_24" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No tasks yet"
-            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+            android:text="No checklists yet"
+            android:textAppearance="?attr/textAppearanceHeadlineMedium"
             android:textColor="@color/md_theme_light_onBackground"
+            android:textStyle="bold"
             android:layout_marginBottom="@dimen/spacing_8" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Create your first task to get started"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="?attr/colorOnSurfaceVariant"
+            android:text="Create your first checklist by tapping the + button"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="@color/md_theme_light_onSurfaceVariant"
             android:gravity="center"
-            android:layout_marginBottom="@dimen/spacing_24" />
+            android:layout_marginBottom="@dimen/spacing_32" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_create_first_task"
+            android:id="@+id/btn_create_first_checklist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Create Task"
-            style="@style/Widget.VEB_APP.FilledButton" />
+            android:text="Create Checklist"
+            app:backgroundTint="@color/sage_green"
+            app:cornerRadius="20dp"
+            app:icon="@drawable/ic_add_24dp"
+            app:iconGravity="textStart"
+            style="@style/Widget.Material3.Button" />
 
     </LinearLayout>
 
-    <!-- Floating Action Button -->
+    <!-- Floating Action Button (Google Keep style) -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add_task"
+        android:id="@+id/fab_add_checklist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/spacing_16"
-        android:contentDescription="Add Task"
+        android:contentDescription="Add Checklist"
         android:src="@drawable/ic_add_24dp"
-        app:backgroundTint="?attr/colorSecondary"
-        app:tint="?attr/colorOnSecondary"
+        app:backgroundTint="@color/sage_green"
+        app:tint="@color/md_theme_light_onPrimary"
         app:fabSize="normal"
-        app:layout_anchor="@id/rv_checklist"
-        app:layout_anchorGravity="bottom|end" />
+        app:borderWidth="0dp"
+        android:layout_gravity="bottom|end" />
 
-        <!-- Legacy TextView for Java compatibility -->
-        <TextView
-            android:id="@+id/text_checklist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/menu_checklist"
-            android:visibility="gone" />
+    <!-- Legacy TextView for Java compatibility -->
+    <TextView
+        android:id="@+id/text_checklist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/menu_checklist"
+        android:visibility="gone" />
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
