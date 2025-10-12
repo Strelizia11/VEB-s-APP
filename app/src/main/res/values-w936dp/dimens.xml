@@ -1,3 +1,97 @@
 <resources>
-    <dimen name="item_transform_image_length">160dp</dimen>
+    <!-- ========================================== -->
+    <!-- LARGE TABLET DIMENSIONS (936dp+)          -->
+    <!-- Optimized for large tablets in landscape  -->
+    <!-- ========================================== -->
+    
+    <!-- Fragment margins - More breathing room -->
+    <dimen name="fragment_horizontal_margin">28dp</dimen>
+    
+    <!-- FAB margin - Well positioned -->
+    <dimen name="fab_margin">24dp</dimen>
+    
+    <!-- Spacing System - Slightly increased but not massive -->
+    <dimen name="spacing_4">4dp</dimen>
+    <dimen name="spacing_8">9dp</dimen>
+    <dimen name="spacing_12">13dp</dimen>
+    <dimen name="spacing_16">18dp</dimen>
+    <dimen name="spacing_20">22dp</dimen>
+    <dimen name="spacing_24">26dp</dimen>
+    <dimen name="spacing_32">34dp</dimen>
+    <dimen name="spacing_40">42dp</dimen>
+    <dimen name="spacing_48">50dp</dimen>
+    <dimen name="spacing_56">58dp</dimen>
+    <dimen name="spacing_64">64dp</dimen>
+    
+    <!-- Card dimensions - Professional sizing -->
+    <dimen name="card_min_height">100dp</dimen>
+    <dimen name="card_padding">16dp</dimen>
+    <dimen name="card_margin">12dp</dimen>
+    <dimen name="card_elevation">2dp</dimen>
+    
+    <!-- Navigation dimensions - Spacious but professional -->
+    <dimen name="nav_header_height">160dp</dimen>
+    <dimen name="nav_item_height">52dp</dimen>
+    <dimen name="nav_item_padding">18dp</dimen>
+    
+    <!-- Icon sizes - Slightly larger -->
+    <dimen name="icon_size_small">20dp</dimen>
+    <dimen name="icon_size_medium">26dp</dimen>
+    <dimen name="icon_size_large">34dp</dimen>
+    <dimen name="icon_size_extra_large">48dp</dimen>
+    
+    <!-- List items - Comfortable sizing -->
+    <dimen name="list_item_height">70dp</dimen>
+    <dimen name="list_item_padding">16dp</dimen>
+    <dimen name="list_item_icon_size">26dp</dimen>
+    
+    <!-- Progress indicators -->
+    <dimen name="progress_circle_size">48dp</dimen>
+    <dimen name="progress_bar_height">4dp</dimen>
+    
+    <!-- Typography - Professional scale -->
+    <dimen name="text_size_display_large">52sp</dimen>
+    <dimen name="text_size_display_medium">42sp</dimen>
+    <dimen name="text_size_display_small">34sp</dimen>
+    <dimen name="text_size_headline_large">28sp</dimen>
+    <dimen name="text_size_headline_medium">24sp</dimen>
+    <dimen name="text_size_headline_small">21sp</dimen>
+    <dimen name="text_size_title_large">19sp</dimen>
+    <dimen name="text_size_title_medium">17sp</dimen>
+    <dimen name="text_size_title_small">15sp</dimen>
+    <dimen name="text_size_body_large">16sp</dimen>
+    <dimen name="text_size_body_medium">15sp</dimen>
+    <dimen name="text_size_body_small">13sp</dimen>
+    <dimen name="text_size_label_large">15sp</dimen>
+    <dimen name="text_size_label_medium">13sp</dimen>
+    <dimen name="text_size_label_small">12sp</dimen>
+    
+    <!-- Component Heights -->
+    <dimen name="component_height_small">38dp</dimen>
+    <dimen name="component_height_medium">46dp</dimen>
+    <dimen name="component_height_large">54dp</dimen>
+    <dimen name="component_height_extra_large">62dp</dimen>
+    
+    <!-- Corner Radius -->
+    <dimen name="corner_radius_small">8dp</dimen>
+    <dimen name="corner_radius_medium">12dp</dimen>
+    <dimen name="corner_radius_large">15dp</dimen>
+    <dimen name="corner_radius_extra_large">18dp</dimen>
+    <dimen name="corner_radius_card">15dp</dimen>
+    <dimen name="corner_radius_button">11dp</dimen>
+    
+    <!-- Elevation -->
+    <dimen name="elevation_1">1dp</dimen>
+    <dimen name="elevation_2">2dp</dimen>
+    <dimen name="elevation_3">3dp</dimen>
+    <dimen name="elevation_4">4dp</dimen>
+    <dimen name="elevation_6">6dp</dimen>
+    
+    <!-- Dashboard Grid -->
+    <dimen name="dashboard_card_width">180dp</dimen>
+    <dimen name="dashboard_card_height">130dp</dimen>
+    <dimen name="dashboard_grid_spacing">16dp</dimen>
+    
+    <!-- Transform items -->
+    <dimen name="item_transform_image_length">120dp</dimen>
 </resources>

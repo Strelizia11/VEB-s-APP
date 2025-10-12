@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Large Tablet Layout (1240dp+) - Same as phone but with optimized spacing -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/Theme.VEB_APP.AppBarOverlay">
+    <!-- Custom Header -->
+    <include
+        android:id="@+id/custom_header"
+        layout="@layout/custom_header" />
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.VEB_APP.PopupOverlay" />
-
-    </com.google.android.material.appbar.AppBarLayout>
+    <!-- Sub Header -->
+    <include
+        android:id="@+id/sub_header"
+        layout="@layout/sub_header" />
 
     <include
         android:id="@+id/content_main"
-        layout="@layout/content_main" />
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        layout="@layout/content_main"
+        android:layout_weight="1" />
+
+</LinearLayout>

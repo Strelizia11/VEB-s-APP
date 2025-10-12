@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tablet Navigation Header (600dp+) - Professional, compact design -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/nav_header_height"
+    android:background="?attr/colorPrimaryContainer"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="@dimen/spacing_16">
+
+    <!-- App Icon/Logo - Smaller for professional look -->
+    <ImageView
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@mipmap/ic_launcher"
+        android:scaleType="centerInside" />
+
+</LinearLayout>
+

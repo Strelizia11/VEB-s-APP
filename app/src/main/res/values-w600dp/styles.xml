@@ -1,0 +1,97 @@
+<resources>
+    <!-- ========================================= -->
+    <!-- TABLET TYPOGRAPHY STYLES (600dp+)        -->
+    <!-- Professional, readable text sizes        -->
+    <!-- ========================================= -->
+
+    <!-- Material 3 Typography Styles for Tablets -->
+    <style name="TextAppearance.VEB_APP.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:textSize">@dimen/text_size_headline_large</item>
+        <item name="android:textColor">@color/md_theme_light_onBackground</item>
+    </style>
+    
+    <style name="TextAppearance.VEB_APP.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:textSize">@dimen/text_size_headline_medium</item>
+        <item name="android:textColor">@color/md_theme_light_onBackground</item>
+    </style>
+    
+    <style name="TextAppearance.VEB_APP.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:textSize">@dimen/text_size_headline_small</item>
+        <item name="android:textColor">@color/md_theme_light_onBackground</item>
+    </style>
+    
+    <style name="TextAppearance.VEB_APP.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">@dimen/text_size_title_large</item>
+        <item name="android:textColor">@color/md_theme_light_onBackground</item>
+    </style>
+    
+    <style name="TextAppearance.VEB_APP.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textSize">@dimen/text_size_title_medium</item>
+        <item name="android:textColor">@color/md_theme_light_onBackground</item>
+    </style>
+    
+    <style name="TextAppearance.VEB_APP.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
+        <item name="android:textSize">@dimen/text_size_title_small</item>
+        <item name="android:textColor">@color/md_theme_light_onBackground</item>
+    </style>
+    
+    <style name="TextAppearance.VEB_APP.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textSize">@dimen/text_size_body_large</item>
+        <item name="android:textColor">@color/md_theme_light_onBackground</item>
+    </style>
+    
+    <style name="TextAppearance.VEB_APP.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textSize">@dimen/text_size_body_medium</item>
+        <item name="android:textColor">@color/md_theme_light_onBackground</item>
+    </style>
+    
+    <style name="TextAppearance.VEB_APP.BodySmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textSize">@dimen/text_size_body_small</item>
+        <item name="android:textColor">@color/md_theme_light_onSurfaceVariant</item>
+    </style>
+    
+    <style name="TextAppearance.VEB_APP.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textSize">@dimen/text_size_label_large</item>
+        <item name="android:textColor">@color/md_theme_light_onBackground</item>
+    </style>
+    
+    <style name="TextAppearance.VEB_APP.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">@dimen/text_size_label_medium</item>
+        <item name="android:textColor">@color/md_theme_light_onBackground</item>
+    </style>
+    
+    <style name="TextAppearance.VEB_APP.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">@dimen/text_size_label_small</item>
+        <item name="android:textColor">@color/md_theme_light_onSurfaceVariant</item>
+    </style>
+
+    <!-- Custom Component Styles for Tablets -->
+    <style name="Widget.VEB_APP.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">?attr/colorSurface</item>
+        <item name="cardElevation">@dimen/card_elevation</item>
+        <item name="cardCornerRadius">@dimen/corner_radius_card</item>
+        <item name="android:layout_margin">@dimen/card_margin</item>
+    </style>
+    
+    <style name="Widget.VEB_APP.FilledButton" parent="Widget.Material3.Button">
+        <item name="backgroundTint">?attr/colorPrimary</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="cornerRadius">@dimen/corner_radius_button</item>
+        <item name="android:minHeight">@dimen/component_height_medium</item>
+    </style>
+    
+    <style name="Widget.VEB_APP.OutlinedButton" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="strokeColor">?attr/colorOutline</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="cornerRadius">@dimen/corner_radius_button</item>
+        <item name="android:minHeight">@dimen/component_height_medium</item>
+    </style>
+
+    <!-- Navigation Item Text for Tablets -->
+    <style name="NavigationItemTextAppearance" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/md_theme_light_onSurface</item>
+    </style>
+
+</resources>
+

@@ -1,12 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Large Tablet Layout (1240dp+) - Fixed Side Navigation -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include
-        android:id="@+id/app_bar_main"
-        layout="@layout/app_bar_main"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <!-- Fixed Side Navigation (Always visible on large tablet) -->
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/nav_view"
+            android:layout_width="320dp"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            android:background="?attr/colorSurface"
+            android:elevation="4dp"
+            app:headerLayout="@layout/nav_header_main"
+            app:menu="@menu/navigation_drawer"
+            app:itemIconTint="?attr/colorOnSurface"
+            app:itemTextColor="?attr/colorOnSurface"
+            app:itemBackground="@drawable/nav_item_background"
+            app:itemTextAppearance="@style/NavigationItemTextAppearance">
+            
+            <!-- Footer with Credits -->
+            <include
+                layout="@layout/nav_footer_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom" />
+                
+        </com.google.android.material.navigation.NavigationView>
+
+        <!-- Main Content Area -->
+        <include
+            android:id="@+id/app_bar_main"
+            layout="@layout/app_bar_main"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <!-- Dummy DrawerLayout for compatibility (not actually used) -->
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
+
 </FrameLayout>

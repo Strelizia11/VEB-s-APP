@@ -1,34 +1,55 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-Wrap the DrawerLayout with FrameLayout to use the same View type for the same view ID
-across the layout configurations
--->
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tablet Layout (600dp+) - Fixed Side Navigation -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.drawerlayout.widget.DrawerLayout
-        android:id="@+id/drawer_layout"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        tools:openDrawer="start">
+        android:orientation="horizontal">
 
+        <!-- Fixed Side Navigation (Always visible on tablet) -->
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/nav_view"
+            android:layout_width="280dp"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            android:background="?attr/colorSurface"
+            android:elevation="4dp"
+            app:headerLayout="@layout/nav_header_main"
+            app:menu="@menu/navigation_drawer"
+            app:itemIconTint="?attr/colorOnSurface"
+            app:itemTextColor="?attr/colorOnSurface"
+            app:itemBackground="@drawable/nav_item_background"
+            app:itemTextAppearance="@style/NavigationItemTextAppearance">
+            
+            <!-- Footer with Credits -->
+            <include
+                layout="@layout/nav_footer_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom" />
+                
+        </com.google.android.material.navigation.NavigationView>
+
+        <!-- Main Content Area -->
         <include
             android:id="@+id/app_bar_main"
             layout="@layout/app_bar_main"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <com.google.android.material.navigation.NavigationView
-            android:id="@+id/nav_view"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:fitsSystemWindows="true"
-            app:headerLayout="@layout/nav_header_main"
-            app:menu="@menu/navigation_drawer" />
-    </androidx.drawerlayout.widget.DrawerLayout>
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <!-- Dummy DrawerLayout for compatibility (not actually used) -->
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
+
 </FrameLayout>

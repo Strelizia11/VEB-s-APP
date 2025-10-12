@@ -57,13 +57,13 @@ public class MainActivity extends AppCompatActivity {
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Setup burger menu click listener
+        // Setup burger menu click listener (only for phones)
         ImageButton burgerMenu = findViewById(R.id.btn_burger_menu);
-        if (burgerMenu != null) {
+        if (burgerMenu != null && burgerMenu.getVisibility() == View.VISIBLE) {
             burgerMenu.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // Open navigation drawer
+                    // Open navigation drawer (only works on phones)
                     if (binding.drawerLayout != null) {
                         binding.drawerLayout.openDrawer(binding.navView);
                     }
@@ -77,10 +77,18 @@ public class MainActivity extends AppCompatActivity {
 
         NavigationView navigationView = binding.navView;
         if (navigationView != null) {
-            mAppBarConfiguration = new AppBarConfiguration.Builder(
-                    R.id.nav_home, R.id.nav_notes, R.id.nav_checklist, R.id.nav_budget, R.id.nav_calendar)
-                    .setOpenableLayout(binding.drawerLayout)
-                    .build();
+            // Only set up drawer on phones, tablets have fixed navigation
+            if (binding.drawerLayout != null && binding.drawerLayout.getVisibility() == View.VISIBLE) {
+                mAppBarConfiguration = new AppBarConfiguration.Builder(
+                        R.id.nav_home, R.id.nav_notes, R.id.nav_checklist, R.id.nav_budget, R.id.nav_calendar)
+                        .setOpenableLayout(binding.drawerLayout)
+                        .build();
+            } else {
+                // Tablet: No drawer, just top-level destinations
+                mAppBarConfiguration = new AppBarConfiguration.Builder(
+                        R.id.nav_home, R.id.nav_notes, R.id.nav_checklist, R.id.nav_budget, R.id.nav_calendar)
+                        .build();
+            }
             NavigationUI.setupWithNavController(navigationView, navController);
         }
 
