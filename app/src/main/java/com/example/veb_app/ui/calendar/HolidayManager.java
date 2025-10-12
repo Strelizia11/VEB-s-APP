@@ -22,22 +22,27 @@ public class HolidayManager {
     }
     
     private void initializePhilippineHolidays() {
-        // 2024 Philippine Holidays
+        // Philippine Holidays - will be generated dynamically for any year
+        // This method now just sets up the holiday structure
+        // Actual holidays will be generated in getHolidaysForDate()
+    }
+    
+    private List<Holiday> generateHolidaysForYear(int year) {
+        List<Holiday> yearHolidays = new ArrayList<>();
         Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR);
         
         // Regular Holidays (Red)
         cal.set(year, Calendar.JANUARY, 1);
-        holidays.add(new Holiday("New Year's Day", cal.getTime(), Holiday.HolidayType.REGULAR));
+        yearHolidays.add(new Holiday("New Year's Day", cal.getTime(), Holiday.HolidayType.REGULAR));
         
         cal.set(year, Calendar.APRIL, 9);
-        holidays.add(new Holiday("Araw ng Kagitingan (Day of Valor)", cal.getTime(), Holiday.HolidayType.REGULAR));
+        yearHolidays.add(new Holiday("Araw ng Kagitingan (Day of Valor)", cal.getTime(), Holiday.HolidayType.REGULAR));
         
         cal.set(year, Calendar.MAY, 1);
-        holidays.add(new Holiday("Labor Day", cal.getTime(), Holiday.HolidayType.REGULAR));
+        yearHolidays.add(new Holiday("Labor Day", cal.getTime(), Holiday.HolidayType.REGULAR));
         
         cal.set(year, Calendar.JUNE, 12);
-        holidays.add(new Holiday("Independence Day", cal.getTime(), Holiday.HolidayType.REGULAR));
+        yearHolidays.add(new Holiday("Independence Day", cal.getTime(), Holiday.HolidayType.REGULAR));
         
         // National Heroes Day - Last Monday of August
         cal.set(year, Calendar.AUGUST, 1);
@@ -49,65 +54,80 @@ public class HolidayManager {
             cal.add(Calendar.DAY_OF_MONTH, 7);
         }
         cal.add(Calendar.DAY_OF_MONTH, -7);
-        holidays.add(new Holiday("National Heroes Day", cal.getTime(), Holiday.HolidayType.REGULAR));
+        yearHolidays.add(new Holiday("National Heroes Day", cal.getTime(), Holiday.HolidayType.REGULAR));
         
         cal.set(year, Calendar.NOVEMBER, 30);
-        holidays.add(new Holiday("Bonifacio Day", cal.getTime(), Holiday.HolidayType.REGULAR));
+        yearHolidays.add(new Holiday("Bonifacio Day", cal.getTime(), Holiday.HolidayType.REGULAR));
         
         cal.set(year, Calendar.DECEMBER, 25);
-        holidays.add(new Holiday("Christmas Day", cal.getTime(), Holiday.HolidayType.REGULAR));
+        yearHolidays.add(new Holiday("Christmas Day", cal.getTime(), Holiday.HolidayType.REGULAR));
         
         cal.set(year, Calendar.DECEMBER, 30);
-        holidays.add(new Holiday("Rizal Day", cal.getTime(), Holiday.HolidayType.REGULAR));
+        yearHolidays.add(new Holiday("Rizal Day", cal.getTime(), Holiday.HolidayType.REGULAR));
         
         // Special Non-Working Days (Blue)
-        // Chinese New Year - February 10, 2024 (simplified, should use lunar calendar)
+        // Chinese New Year - February 10 (simplified, should use lunar calendar)
         cal.set(year, Calendar.FEBRUARY, 10);
-        holidays.add(new Holiday("Chinese New Year", cal.getTime(), Holiday.HolidayType.SPECIAL));
+        yearHolidays.add(new Holiday("Chinese New Year", cal.getTime(), Holiday.HolidayType.SPECIAL));
         
-        // Easter dates for 2024 (simplified)
+        // Easter dates (simplified - these should be calculated properly)
         cal.set(year, Calendar.MARCH, 28);
-        holidays.add(new Holiday("Maundy Thursday", cal.getTime(), Holiday.HolidayType.SPECIAL));
+        yearHolidays.add(new Holiday("Maundy Thursday", cal.getTime(), Holiday.HolidayType.SPECIAL));
         
         cal.set(year, Calendar.MARCH, 29);
-        holidays.add(new Holiday("Good Friday", cal.getTime(), Holiday.HolidayType.SPECIAL));
+        yearHolidays.add(new Holiday("Good Friday", cal.getTime(), Holiday.HolidayType.SPECIAL));
         
         cal.set(year, Calendar.MARCH, 30);
-        holidays.add(new Holiday("Black Saturday", cal.getTime(), Holiday.HolidayType.SPECIAL));
+        yearHolidays.add(new Holiday("Black Saturday", cal.getTime(), Holiday.HolidayType.SPECIAL));
         
-        // Eid dates for 2024 (simplified)
+        // Eid dates (simplified - these should be calculated properly)
         cal.set(year, Calendar.APRIL, 10);
-        holidays.add(new Holiday("Eid'l Fitr", cal.getTime(), Holiday.HolidayType.SPECIAL));
+        yearHolidays.add(new Holiday("Eid'l Fitr", cal.getTime(), Holiday.HolidayType.SPECIAL));
         
         cal.set(year, Calendar.JUNE, 16);
-        holidays.add(new Holiday("Eid'l Adha", cal.getTime(), Holiday.HolidayType.SPECIAL));
+        yearHolidays.add(new Holiday("Eid'l Adha", cal.getTime(), Holiday.HolidayType.SPECIAL));
         
         cal.set(year, Calendar.AUGUST, 21);
-        holidays.add(new Holiday("Ninoy Aquino Day", cal.getTime(), Holiday.HolidayType.SPECIAL));
+        yearHolidays.add(new Holiday("Ninoy Aquino Day", cal.getTime(), Holiday.HolidayType.SPECIAL));
         
         cal.set(year, Calendar.NOVEMBER, 1);
-        holidays.add(new Holiday("All Saints' Day", cal.getTime(), Holiday.HolidayType.SPECIAL));
+        yearHolidays.add(new Holiday("All Saints' Day", cal.getTime(), Holiday.HolidayType.SPECIAL));
         
         cal.set(year, Calendar.NOVEMBER, 2);
-        holidays.add(new Holiday("All Souls' Day", cal.getTime(), Holiday.HolidayType.SPECIAL));
+        yearHolidays.add(new Holiday("All Souls' Day", cal.getTime(), Holiday.HolidayType.SPECIAL));
         
         cal.set(year, Calendar.DECEMBER, 8);
-        holidays.add(new Holiday("Feast of the Immaculate Conception", cal.getTime(), Holiday.HolidayType.SPECIAL));
+        yearHolidays.add(new Holiday("Feast of the Immaculate Conception", cal.getTime(), Holiday.HolidayType.SPECIAL));
         
         cal.set(year, Calendar.DECEMBER, 24);
-        holidays.add(new Holiday("Christmas Eve", cal.getTime(), Holiday.HolidayType.SPECIAL));
+        yearHolidays.add(new Holiday("Christmas Eve", cal.getTime(), Holiday.HolidayType.SPECIAL));
         
         cal.set(year, Calendar.DECEMBER, 31);
-        holidays.add(new Holiday("Last Day of the Year", cal.getTime(), Holiday.HolidayType.SPECIAL));
+        yearHolidays.add(new Holiday("Last Day of the Year", cal.getTime(), Holiday.HolidayType.SPECIAL));
+        
+        return yearHolidays;
     }
     
     public List<Holiday> getHolidaysForDate(Date date) {
         List<Holiday> holidaysForDate = new ArrayList<>();
-        for (Holiday holiday : holidays) {
+        
+        if (date == null) return holidaysForDate;
+        
+        // Get the year of the requested date
+        Calendar dateCal = Calendar.getInstance();
+        dateCal.setTime(date);
+        int year = dateCal.get(Calendar.YEAR);
+        
+        // Generate holidays for that year
+        List<Holiday> yearHolidays = generateHolidaysForYear(year);
+        
+        // Check if any of the year's holidays match the requested date
+        for (Holiday holiday : yearHolidays) {
             if (holiday.isSameDate(date)) {
                 holidaysForDate.add(holiday);
             }
         }
+        
         return holidaysForDate;
     }
     

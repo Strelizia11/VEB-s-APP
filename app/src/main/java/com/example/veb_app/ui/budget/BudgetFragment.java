@@ -479,11 +479,13 @@ public class BudgetFragment extends Fragment {
         btnIncome.setOnClickListener(v -> {
             selectedTransactionType = BudgetManager.Transaction.TransactionType.INCOME;
             updateTransactionTypeButtons(btnIncome, btnExpense);
+            updateCategoryDropdown(actvCategory);
         });
 
          btnExpense.setOnClickListener(v -> {
              selectedTransactionType = BudgetManager.Transaction.TransactionType.EXPENSE;
              updateTransactionTypeButtons(btnIncome, btnExpense);
+             updateCategoryDropdown(actvCategory);
          });
 
          // Set default date to today
@@ -525,6 +527,11 @@ public class BudgetFragment extends Fragment {
 
                 budgetManager.addTransaction(transaction);
                 loadBudgetData(); // Refresh all data
+                
+                // Refresh home page if it's visible
+                android.util.Log.d("BudgetFragment", "Calling refreshHomePageIfVisible after adding transaction");
+                com.example.veb_app.ui.home.HomeFragment.refreshHomePageIfVisible();
+                
                 dialog.dismiss();
                 
                 String typeText = selectedTransactionType == BudgetManager.Transaction.TransactionType.INCOME ? "Income" : "Expense";
@@ -544,7 +551,17 @@ public class BudgetFragment extends Fragment {
     }
 
     private void setupCategoryDropdown(AutoCompleteTextView actvCategory) {
-        List<BudgetManager.BudgetCategory> categories = budgetManager.getAllCategories();
+        updateCategoryDropdown(actvCategory);
+    }
+    
+    private void updateCategoryDropdown(AutoCompleteTextView actvCategory) {
+        List<BudgetManager.BudgetCategory> categories;
+        if (selectedTransactionType == BudgetManager.Transaction.TransactionType.INCOME) {
+            categories = budgetManager.getIncomeCategories();
+        } else {
+            categories = budgetManager.getExpenseCategories();
+        }
+        
         List<String> categoryNames = new ArrayList<>();
         for (BudgetManager.BudgetCategory category : categories) {
             categoryNames.add(category.getName());
@@ -553,6 +570,9 @@ public class BudgetFragment extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), 
             android.R.layout.simple_dropdown_item_1line, categoryNames);
         actvCategory.setAdapter(adapter);
+        
+        // Clear the selected category when switching types
+        actvCategory.setText("");
     }
 
     private void setupDatePicker(TextInputEditText etDate) {

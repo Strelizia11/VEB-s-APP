@@ -20,15 +20,46 @@ import com.example.veb_app.ui.notes.NotesFragment;
 import com.example.veb_app.ui.checklist.ChecklistManager;
 import com.example.veb_app.ui.checklist.ChecklistFragment;
 import com.example.veb_app.ui.budget.BudgetManager;
+import com.example.veb_app.ui.calendar.EventManager;
+import com.example.veb_app.ui.calendar.HolidayManager;
+import com.example.veb_app.ui.calendar.Event;
+import com.example.veb_app.ui.calendar.Holiday;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import android.widget.LinearLayout;
 import android.widget.CheckBox;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
+    private static HomeFragment instance;
+    private Timer refreshTimer;
+
+    public static void refreshHomePageIfVisible() {
+        android.util.Log.d("HomeFragment", "refreshHomePageIfVisible called");
+        android.util.Log.d("HomeFragment", "instance: " + instance);
+        android.util.Log.d("HomeFragment", "isAdded: " + (instance != null ? instance.isAdded() : "null"));
+        android.util.Log.d("HomeFragment", "activity: " + (instance != null ? instance.getActivity() : "null"));
+        
+        if (instance != null && instance.isAdded() && instance.getActivity() != null) {
+            android.util.Log.d("HomeFragment", "Refreshing home page...");
+            instance.refreshHomePage();
+        } else {
+            android.util.Log.d("HomeFragment", "Home page not refreshed - conditions not met");
+        }
+    }
+    
+    public void forceRefresh() {
+        android.util.Log.d("HomeFragment", "forceRefresh called");
+        refreshHomePage();
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -37,11 +68,15 @@ public class HomeFragment extends Fragment {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+        
+        // Set instance for static access
+        instance = this;
 
         final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         
             // Setup featured note and checklist display
+            setupTodayCalendar(root);
             setupFeaturedNote(root);
             setupFeaturedChecklist(root);
             setupBudgetOverview(root);
@@ -52,18 +87,83 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-            // Refresh featured note and checklist when returning to home
-            if (binding != null) {
-                setupFeaturedNote(binding.getRoot());
-                setupFeaturedChecklist(binding.getRoot());
-                setupBudgetOverview(binding.getRoot());
+        // Always refresh all data when returning to home
+        android.util.Log.d("HomeFragment", "onResume called - refreshing home page");
+        refreshHomePage();
+    }
+    
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Also refresh when starting to ensure data is up to date
+        android.util.Log.d("HomeFragment", "onStart called - refreshing home page");
+        refreshHomePage();
+        
+        // Start periodic refresh every 2 seconds
+        startPeriodicRefresh();
+    }
+    
+    private void startPeriodicRefresh() {
+        if (refreshTimer != null) {
+            refreshTimer.cancel();
+        }
+        
+        refreshTimer = new Timer();
+        refreshTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            android.util.Log.d("HomeFragment", "Periodic refresh triggered");
+                            refreshHomePage();
+                        }
+                    });
+                }
             }
+        }, 2000, 2000); // Start after 2 seconds, repeat every 2 seconds
+    }
+    
+    private void stopPeriodicRefresh() {
+        if (refreshTimer != null) {
+            refreshTimer.cancel();
+            refreshTimer = null;
+        }
+    }
+    
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        android.util.Log.d("HomeFragment", "onHiddenChanged called - hidden: " + hidden);
+        if (!hidden) {
+            // Fragment is becoming visible, refresh data
+            refreshHomePage();
+        }
+    }
+    
+    private void refreshHomePage() {
+        android.util.Log.d("HomeFragment", "refreshHomePage called");
+        android.util.Log.d("HomeFragment", "binding: " + binding);
+        
+        if (binding != null) {
+            android.util.Log.d("HomeFragment", "Setting up all components...");
+            setupTodayCalendar(binding.getRoot());
+            setupFeaturedNote(binding.getRoot());
+            setupFeaturedChecklist(binding.getRoot());
+            setupBudgetOverview(binding.getRoot());
+            android.util.Log.d("HomeFragment", "All components set up");
+        } else {
+            android.util.Log.d("HomeFragment", "Binding is null, cannot refresh");
+        }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        stopPeriodicRefresh();
         binding = null;
+        instance = null;
     }
 
     private void setupFeaturedNote(View root) {
@@ -87,15 +187,15 @@ public class HomeFragment extends Fragment {
                 content = content.substring(0, 147) + "...";
             }
             tvFeaturedNoteContent.setText(content);
-            
-            // Show featured note card, hide no notes message
-            cardFeaturedNote.setVisibility(View.VISIBLE);
-            tvNoNotesMessage.setVisibility(View.GONE);
         } else {
-            // No notes available
-            cardFeaturedNote.setVisibility(View.GONE);
-            tvNoNotesMessage.setVisibility(View.VISIBLE);
+            // No notes available - show empty state
+            tvFeaturedNoteTitle.setText("Notes");
+            tvFeaturedNoteContent.setText("There is no existing notes yet");
         }
+        
+        // Always show the note card
+        cardFeaturedNote.setVisibility(View.VISIBLE);
+        tvNoNotesMessage.setVisibility(View.GONE);
 
         // Setup View All Notes button
         btnViewAllNotes.setOnClickListener(v -> {
@@ -155,14 +255,16 @@ public class HomeFragment extends Fragment {
             tvFeaturedChecklistProgress.setText(completedCount + " of " + totalTasks + " completed");
             progressCircle.setProgress(progress);
             
-            // Show featured checklist card, hide no checklists message
-            cardFeaturedChecklist.setVisibility(View.VISIBLE);
-            tvNoChecklistsMessage.setVisibility(View.GONE);
         } else {
-            // No checklists available
-            cardFeaturedChecklist.setVisibility(View.GONE);
-            tvNoChecklistsMessage.setVisibility(View.VISIBLE);
+            // No checklists available - show empty state
+            tvFeaturedChecklistTitle.setText("Checklist");
+            tvFeaturedChecklistProgress.setText("There is no existing checklist yet");
+            progressCircle.setProgress(0);
         }
+        
+        // Always show the checklist card
+        cardFeaturedChecklist.setVisibility(View.VISIBLE);
+        tvNoChecklistsMessage.setVisibility(View.GONE);
 
         // Setup View All Checklists button
         btnViewAllChecklists.setOnClickListener(v -> {
@@ -267,5 +369,98 @@ public class HomeFragment extends Fragment {
                 }
             });
         }
+    }
+
+    private void setupTodayCalendar(View root) {
+        TextView tvTodayMonth = root.findViewById(R.id.tv_today_month);
+        TextView tvTodayDay = root.findViewById(R.id.tv_today_day);
+        TextView tvTodayDayName = root.findViewById(R.id.tv_today_day_name);
+        TextView tvTodayEvent = root.findViewById(R.id.tv_today_event);
+        TextView dotIncome = root.findViewById(R.id.dot_income);
+        TextView dotExpense = root.findViewById(R.id.dot_expense);
+        TextView dotEvent = root.findViewById(R.id.dot_event);
+
+        // Get today's date
+        Calendar today = Calendar.getInstance();
+        Date todayDate = today.getTime();
+
+        // Set date information
+        SimpleDateFormat monthFormat = new SimpleDateFormat("MMM", java.util.Locale.getDefault());
+        SimpleDateFormat dayFormat = new SimpleDateFormat("d", java.util.Locale.getDefault());
+        SimpleDateFormat dayNameFormat = new SimpleDateFormat("EEE", java.util.Locale.getDefault());
+
+        tvTodayMonth.setText(monthFormat.format(todayDate).toUpperCase());
+        tvTodayDay.setText(dayFormat.format(todayDate));
+        tvTodayDayName.setText(dayNameFormat.format(todayDate).toUpperCase());
+
+        // Get events and holidays for today
+        EventManager eventManager = EventManager.getInstance();
+        HolidayManager holidayManager = HolidayManager.getInstance();
+        BudgetManager budgetManager = BudgetManager.getInstance();
+
+        List<Event> events = eventManager.getEventsByDate(todayDate);
+        List<Holiday> holidays = holidayManager.getHolidaysForDate(todayDate);
+        // Get all transactions and filter for today
+        List<BudgetManager.Transaction> allTransactions = budgetManager.getAllTransactions();
+        List<BudgetManager.Transaction> todayTransactions = new java.util.ArrayList<>();
+        
+        Calendar todayCal = Calendar.getInstance();
+        todayCal.setTime(todayDate);
+        
+        for (BudgetManager.Transaction transaction : allTransactions) {
+            Calendar transactionCal = Calendar.getInstance();
+            transactionCal.setTime(transaction.getDate());
+            
+            if (todayCal.get(Calendar.YEAR) == transactionCal.get(Calendar.YEAR) &&
+                todayCal.get(Calendar.MONTH) == transactionCal.get(Calendar.MONTH) &&
+                todayCal.get(Calendar.DAY_OF_MONTH) == transactionCal.get(Calendar.DAY_OF_MONTH)) {
+                todayTransactions.add(transaction);
+            }
+        }
+
+        // Determine what to display as the event
+        StringBuilder eventText = new StringBuilder();
+        
+        // Show holidays first
+        if (!holidays.isEmpty()) {
+            for (Holiday holiday : holidays) {
+                if (eventText.length() > 0) eventText.append(", ");
+                eventText.append("Holiday: ").append(holiday.getName());
+            }
+        }
+        
+        // Then show custom events
+        if (!events.isEmpty()) {
+            for (Event event : events) {
+                if (eventText.length() > 0) eventText.append("\n");
+                String timeText = event.getTime() != null && !event.getTime().isEmpty() ? 
+                                 " (" + event.getTime() + ")" : "";
+                eventText.append("Event: ").append(event.getTitle()).append(timeText);
+            }
+        }
+
+        if (eventText.length() == 0) {
+            tvTodayEvent.setText("No Scheduled Event");
+        } else {
+            tvTodayEvent.setText(eventText.toString());
+        }
+
+        // Use the same logic as the calendar to determine dots
+        boolean hasIncome = false;
+        boolean hasExpenses = false;
+        boolean hasEvents = !events.isEmpty();
+
+        for (BudgetManager.Transaction transaction : todayTransactions) {
+            if (transaction.getType() == BudgetManager.Transaction.TransactionType.INCOME) {
+                hasIncome = true;
+            } else {
+                hasExpenses = true;
+            }
+        }
+
+        // Show dots based on the same logic as the calendar
+        dotIncome.setVisibility(hasIncome ? View.VISIBLE : View.GONE);
+        dotExpense.setVisibility(hasExpenses ? View.VISIBLE : View.GONE);
+        dotEvent.setVisibility(hasEvents ? View.VISIBLE : View.GONE);
     }
 }

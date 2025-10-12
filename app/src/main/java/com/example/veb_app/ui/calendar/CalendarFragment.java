@@ -359,6 +359,20 @@ public class CalendarFragment extends Fragment {
                         Calendar cal = Calendar.getInstance();
                         cal.setTime(currentCalendar.getTime());
                         cal.set(Calendar.DAY_OF_MONTH, dayNumber);
+                        Date dayDate = cal.getTime();
+                        
+                        // Check for holidays and set text color accordingly
+                        List<Holiday> holidaysForDate = holidayManager.getHolidaysForDate(dayDate);
+                        int textColor = getResources().getColor(R.color.md_theme_light_onSurface); // Default color
+                        
+                        if (!holidaysForDate.isEmpty()) {
+                            Holiday.HolidayType holidayType = holidaysForDate.get(0).getType();
+                            if (holidayType == Holiday.HolidayType.REGULAR) {
+                                textColor = getResources().getColor(R.color.error); // Red for regular holidays
+                            } else if (holidayType == Holiday.HolidayType.SPECIAL) {
+                                textColor = android.graphics.Color.parseColor("#2196F3"); // Blue for special holidays
+                            }
+                        }
                         
                         if (cal.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
                             cal.get(Calendar.MONTH) == today.get(Calendar.MONTH) &&
@@ -369,7 +383,7 @@ public class CalendarFragment extends Fragment {
                         } else {
                             // Regular day
                             dayView.setBackgroundResource(R.drawable.day_background);
-                            dayView.setTextColor(getResources().getColor(R.color.md_theme_light_onSurface));
+                            dayView.setTextColor(textColor);
                         }
                     }
                 }
@@ -442,8 +456,8 @@ public class CalendarFragment extends Fragment {
             // Show holidays first
             if (!holidays.isEmpty()) {
                 for (Holiday holiday : holidays) {
-                    if (eventText.length() > 0) eventText.append(", ");
-                    eventText.append("🎉 ").append(holiday.getName());
+                    if (eventText.length() > 0) eventText.append("\n");
+                    eventText.append("Holiday: ").append(holiday.getName());
                 }
             }
             
@@ -453,7 +467,7 @@ public class CalendarFragment extends Fragment {
                     if (eventText.length() > 0) eventText.append("\n");
                     String timeText = event.getTime() != null && !event.getTime().isEmpty() ? 
                                      " (" + event.getTime() + ")" : "";
-                    eventText.append("📅 ").append(event.getTitle()).append(timeText);
+                    eventText.append("Event: ").append(event.getTitle()).append(timeText);
                 }
             }
             
@@ -610,6 +624,10 @@ public class CalendarFragment extends Fragment {
                     Event event = new Event(title, "Test description", date, null, "Personal", "#2196F3", true);
                     eventManager.addEvent(event);
                     loadCalendarData();
+                    
+                    // Refresh home page if it's visible
+                    com.example.veb_app.ui.home.HomeFragment.refreshHomePageIfVisible();
+                    
                     Toast.makeText(getContext(), "Event created: " + title, Toast.LENGTH_SHORT).show();
                 }
                 
@@ -666,6 +684,10 @@ public class CalendarFragment extends Fragment {
                         event.setDescription(description);
                         eventManager.updateEvent(event);
                         loadCalendarData();
+                        
+                        // Refresh home page if it's visible
+                        com.example.veb_app.ui.home.HomeFragment.refreshHomePageIfVisible();
+                        
                         Toast.makeText(getContext(), "Event updated: " + title, Toast.LENGTH_SHORT).show();
                     }
                     
@@ -685,6 +707,10 @@ public class CalendarFragment extends Fragment {
                     if (eventManager != null) {
                         eventManager.deleteEvent(event);
                         loadCalendarData();
+                        
+                        // Refresh home page if it's visible
+                        com.example.veb_app.ui.home.HomeFragment.refreshHomePageIfVisible();
+                        
                         Toast.makeText(getContext(), "Event deleted: " + event.getTitle(), Toast.LENGTH_SHORT).show();
                     }
                     dialog.dismiss();

@@ -9,23 +9,129 @@
     android:background="@color/md_theme_light_background"
     tools:context=".ui.home.HomeFragment">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Welcome to VEB App!"
-        android:textSize="24sp"
-        android:textColor="@color/md_theme_light_onBackground"
-        android:layout_marginBottom="16dp" />
 
-    <!-- Featured Note Section -->
-    <TextView
-        android:layout_width="wrap_content"
+    <!-- Today's Calendar Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_today_calendar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Featured Note"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="@color/md_theme_light_onBackground"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="16dp"
+        app:cardBackgroundColor="@color/sage_green_light"
+        app:cardCornerRadius="@dimen/corner_radius_large"
+        app:cardElevation="@dimen/elevation_2"
+        app:strokeColor="@color/sage_green_darker"
+        app:strokeWidth="1dp"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="0dp"
+            android:paddingRight="@dimen/spacing_16"
+            android:paddingTop="@dimen/spacing_16"
+            android:paddingBottom="@dimen/spacing_16"
+            android:gravity="center_vertical">
+
+            <!-- Date Section -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginLeft="8dp">
+
+                <TextView
+                    android:id="@+id/tv_today_month"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DEC"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textStyle="bold"
+                    android:textColor="@color/md_theme_light_onBackground" />
+
+                <TextView
+                    android:id="@+id/tv_today_day"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="16"
+                    android:textAppearance="?attr/textAppearanceHeadlineLarge"
+                    android:textStyle="bold"
+                    android:textColor="@color/md_theme_light_onBackground" />
+
+                <TextView
+                    android:id="@+id/tv_today_day_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TUE"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textStyle="bold"
+                    android:textColor="@color/md_theme_light_onBackground" />
+
+            </LinearLayout>
+
+            <!-- Event Section -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tv_today_event"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No Scheduled Event"
+                    android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                    android:textStyle="bold"
+                    android:textColor="@color/md_theme_light_onBackground"
+                    android:gravity="center" />
+
+                <!-- Income/Expense Dots -->
+                <LinearLayout
+                    android:id="@+id/layout_today_dots"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginTop="@dimen/spacing_8">
+
+                    <TextView
+                        android:id="@+id/dot_income"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🟢"
+                        android:textSize="16sp"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/dot_expense"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔴"
+                        android:textSize="16sp"
+                        android:layout_marginStart="@dimen/spacing_8"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/dot_event"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔵"
+                        android:textSize="16sp"
+                        android:layout_marginStart="@dimen/spacing_8"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
 
     <!-- Featured Note Container -->
     <com.google.android.material.card.MaterialCardView
@@ -93,16 +199,6 @@
         android:padding="@dimen/spacing_16"
         android:visibility="gone" />
 
-    <!-- Featured Checklist Section -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Featured Checklist"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="@color/md_theme_light_onBackground"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="12dp" />
 
     <!-- Featured Checklist Container -->
     <com.google.android.material.card.MaterialCardView
@@ -196,16 +292,6 @@
             android:padding="@dimen/spacing_16"
             android:visibility="gone" />
 
-        <!-- Budget Overview Section -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Budget Overview"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/md_theme_light_onBackground"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="12dp" />
 
         <!-- Budget Overview Container -->
         <com.google.android.material.card.MaterialCardView
