@@ -7,30 +7,11 @@
     android:gravity="center"
     android:padding="@dimen/spacing_16">
 
-    <!-- App Icon/Logo -->
+    <!-- App Icon/Logo - Centered -->
     <ImageView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:src="@mipmap/ic_launcher"
-        android:layout_marginBottom="@dimen/spacing_12"
         android:scaleType="centerInside" />
-
-    <!-- App Name -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textAppearance="?attr/textAppearanceHeadlineSmall"
-        android:textColor="?attr/colorOnPrimaryContainer"
-        android:layout_marginBottom="@dimen/spacing_4" />
-
-    <!-- Subtitle -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Personal Productivity"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textColor="?attr/colorOnPrimaryContainer"
-        android:alpha="0.8" />
 
 </LinearLayout>

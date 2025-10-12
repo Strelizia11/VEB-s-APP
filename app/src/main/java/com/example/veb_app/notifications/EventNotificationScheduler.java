@@ -49,11 +49,15 @@ public class EventNotificationScheduler {
         notificationTime.set(Calendar.MINUTE, 0);
         notificationTime.set(Calendar.SECOND, 0);
 
-        // Only schedule if the notification time is in the future
-        if (notificationTime.getTimeInMillis() > System.currentTimeMillis()) {
-            scheduleNotification(event, notificationTime.getTimeInMillis(), true);
-            Log.d(TAG, "Scheduled day-before notification for: " + event.getTitle() + " at " + notificationTime.getTime());
+        // For testing: if notification time is in the past, schedule for 30 seconds from now
+        if (notificationTime.getTimeInMillis() <= System.currentTimeMillis()) {
+            notificationTime = Calendar.getInstance();
+            notificationTime.add(Calendar.SECOND, 30);
+            Log.d(TAG, "Day-before notification scheduled for testing (30 seconds from now)");
         }
+
+        scheduleNotification(event, notificationTime.getTimeInMillis(), true);
+        Log.d(TAG, "Scheduled day-before notification for: " + event.getTitle() + " at " + notificationTime.getTime());
     }
 
     /**
@@ -70,11 +74,15 @@ public class EventNotificationScheduler {
         notificationTime.set(Calendar.MINUTE, 0);
         notificationTime.set(Calendar.SECOND, 0);
 
-        // Only schedule if the notification time is in the future
-        if (notificationTime.getTimeInMillis() > System.currentTimeMillis()) {
-            scheduleNotification(event, notificationTime.getTimeInMillis(), false);
-            Log.d(TAG, "Scheduled event-day notification for: " + event.getTitle() + " at " + notificationTime.getTime());
+        // For testing: if notification time is in the past, schedule for 60 seconds from now
+        if (notificationTime.getTimeInMillis() <= System.currentTimeMillis()) {
+            notificationTime = Calendar.getInstance();
+            notificationTime.add(Calendar.SECOND, 60);
+            Log.d(TAG, "Event-day notification scheduled for testing (60 seconds from now)");
         }
+
+        scheduleNotification(event, notificationTime.getTimeInMillis(), false);
+        Log.d(TAG, "Scheduled event-day notification for: " + event.getTitle() + " at " + notificationTime.getTime());
     }
 
     /**
@@ -103,18 +111,22 @@ public class EventNotificationScheduler {
 
         // Schedule the alarm
         try {
+            Log.d(TAG, "Scheduling notification for: " + event.getTitle() + " at " + new Date(triggerTime));
+            
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 alarmManager.setExactAndAllowWhileIdle(
                         AlarmManager.RTC_WAKEUP,
                         triggerTime,
                         pendingIntent
                 );
+                Log.d(TAG, "Notification scheduled successfully (setExactAndAllowWhileIdle)");
             } else {
                 alarmManager.setExact(
                         AlarmManager.RTC_WAKEUP,
                         triggerTime,
                         pendingIntent
                 );
+                Log.d(TAG, "Notification scheduled successfully (setExact)");
             }
         } catch (SecurityException e) {
             Log.e(TAG, "Failed to schedule notification: " + e.getMessage());

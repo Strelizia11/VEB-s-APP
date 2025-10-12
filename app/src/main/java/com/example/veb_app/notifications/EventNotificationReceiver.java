@@ -20,11 +20,17 @@ public class EventNotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        android.util.Log.d("EventNotificationReceiver", "Notification received!");
+        
         String eventTitle = intent.getStringExtra(EXTRA_EVENT_TITLE);
         String eventDescription = intent.getStringExtra(EXTRA_EVENT_DESCRIPTION);
         boolean isDayBefore = intent.getBooleanExtra(EXTRA_IS_DAY_BEFORE, false);
 
+        android.util.Log.d("EventNotificationReceiver", "Event title: " + eventTitle);
+        android.util.Log.d("EventNotificationReceiver", "Is day before: " + isDayBefore);
+
         if (eventTitle == null) {
+            android.util.Log.e("EventNotificationReceiver", "Event title is null!");
             return;
         }
 
