@@ -41,11 +41,11 @@ public class EventNotificationScheduler {
         Calendar eventCalendar = Calendar.getInstance();
         eventCalendar.setTime(event.getDate());
 
-        // Set to one day before at 9:00 AM
+        // Set to one day before at 7:00 AM
         Calendar notificationTime = Calendar.getInstance();
         notificationTime.setTime(event.getDate());
         notificationTime.add(Calendar.DAY_OF_MONTH, -1);
-        notificationTime.set(Calendar.HOUR_OF_DAY, 9);
+        notificationTime.set(Calendar.HOUR_OF_DAY, 7);
         notificationTime.set(Calendar.MINUTE, 0);
         notificationTime.set(Calendar.SECOND, 0);
 
@@ -67,10 +67,10 @@ public class EventNotificationScheduler {
         Calendar eventCalendar = Calendar.getInstance();
         eventCalendar.setTime(event.getDate());
 
-        // Set to event day at 9:00 AM
+        // Set to event day at 7:00 AM
         Calendar notificationTime = Calendar.getInstance();
         notificationTime.setTime(event.getDate());
-        notificationTime.set(Calendar.HOUR_OF_DAY, 9);
+        notificationTime.set(Calendar.HOUR_OF_DAY, 7);
         notificationTime.set(Calendar.MINUTE, 0);
         notificationTime.set(Calendar.SECOND, 0);
 

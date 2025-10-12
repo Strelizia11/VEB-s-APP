@@ -69,6 +69,15 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <!-- Splash Screen Theme -->
+    <style name="Theme.VEB_APP.Splash" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:statusBarColor">@color/sage_green</item>
+        <item name="android:navigationBarColor">@color/sage_green</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+
     <!-- Material 3 Shape Styles -->
     <style name="ShapeAppearance.VEB_APP.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
         <item name="cornerFamily">rounded</item>

@@ -176,6 +176,9 @@ public class HomeFragment extends Fragment {
 
         // Get featured note (pinned or most recent)
         NotesManager notesManager = NotesManager.getInstance();
+        if (getContext() != null) {
+            notesManager.initialize(getContext());
+        }
         NotesFragment.Note featuredNote = notesManager.getFeaturedNote();
 
         if (featuredNote != null) {
@@ -396,8 +399,14 @@ public class HomeFragment extends Fragment {
 
         // Get events and holidays for today
         EventManager eventManager = EventManager.getInstance();
+        if (getContext() != null) {
+            eventManager.initialize(getContext());
+        }
         HolidayManager holidayManager = HolidayManager.getInstance();
         BudgetManager budgetManager = BudgetManager.getInstance();
+        if (getContext() != null) {
+            budgetManager.initialize(getContext());
+        }
 
         List<Event> events = eventManager.getEventsByDate(todayDate);
         List<Holiday> holidays = holidayManager.getHolidaysForDate(todayDate);
