@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
     android:background="@color/md_theme_light_background"
     tools:context=".ui.home.HomeFragment">
 
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <!-- Today's Calendar Card -->
+
+    <!-- Today's Schedule Card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_today_calendar"
         android:layout_width="match_parent"
@@ -18,19 +22,16 @@
         android:layout_marginBottom="16dp"
         app:cardBackgroundColor="@color/sage_green_light"
         app:cardCornerRadius="@dimen/corner_radius_large"
-        app:cardElevation="@dimen/elevation_2"
+        app:cardElevation="@dimen/elevation_4"
         app:strokeColor="@color/sage_green_darker"
-        app:strokeWidth="1dp"
+        app:strokeWidth="2dp"
         android:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingLeft="0dp"
-            android:paddingRight="@dimen/spacing_16"
-            android:paddingTop="@dimen/spacing_16"
-            android:paddingBottom="@dimen/spacing_16"
+            android:padding="@dimen/spacing_20"
             android:gravity="center_vertical">
 
             <!-- Date Section -->
@@ -40,7 +41,8 @@
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:layout_marginLeft="8dp">
+                android:background="@drawable/date_background"
+                android:padding="@dimen/spacing_12">
 
                 <TextView
                     android:id="@+id/tv_today_month"
@@ -49,7 +51,8 @@
                     android:text="DEC"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
                     android:textStyle="bold"
-                    android:textColor="@color/md_theme_light_onBackground" />
+                    android:textColor="@color/md_theme_light_onBackground"
+                    android:alpha="0.8" />
 
                 <TextView
                     android:id="@+id/tv_today_day"
@@ -58,7 +61,8 @@
                     android:text="16"
                     android:textAppearance="?attr/textAppearanceHeadlineLarge"
                     android:textStyle="bold"
-                    android:textColor="@color/md_theme_light_onBackground" />
+                    android:textColor="@color/md_theme_light_onBackground"
+                    android:layout_marginVertical="@dimen/spacing_4" />
 
                 <TextView
                     android:id="@+id/tv_today_day_name"
@@ -67,15 +71,24 @@
                     android:text="TUE"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
                     android:textStyle="bold"
-                    android:textColor="@color/md_theme_light_onBackground" />
+                    android:textColor="@color/md_theme_light_onBackground"
+                    android:alpha="0.8" />
 
             </LinearLayout>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="60dp"
+                android:background="@color/sage_green_darker"
+                android:alpha="0.3"
+                android:layout_marginHorizontal="@dimen/spacing_16" />
 
             <!-- Event Section -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:orientation="vertical"
                 android:gravity="center">
 
@@ -87,16 +100,20 @@
                     android:textAppearance="?attr/textAppearanceHeadlineSmall"
                     android:textStyle="bold"
                     android:textColor="@color/md_theme_light_onBackground"
-                    android:gravity="center" />
+                    android:gravity="center"
+                    android:maxLines="2"
+                    android:ellipsize="end" />
 
-                <!-- Income/Expense Dots -->
+                <!-- Activity Indicators -->
                 <LinearLayout
                     android:id="@+id/layout_today_dots"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center"
-                    android:layout_marginTop="@dimen/spacing_8">
+                    android:layout_marginTop="@dimen/spacing_12"
+                    android:background="@drawable/dots_background"
+                    android:padding="@dimen/spacing_8">
 
                     <TextView
                         android:id="@+id/dot_income"
@@ -104,7 +121,7 @@
                         android:layout_height="wrap_content"
                         android:text="🟢"
                         android:textSize="16sp"
-                        android:visibility="visible" />
+                        android:visibility="gone" />
 
                     <TextView
                         android:id="@+id/dot_expense"
@@ -113,7 +130,7 @@
                         android:text="🔴"
                         android:textSize="16sp"
                         android:layout_marginStart="@dimen/spacing_8"
-                        android:visibility="visible" />
+                        android:visibility="gone" />
 
                     <TextView
                         android:id="@+id/dot_event"
@@ -400,3 +417,5 @@
         android:visibility="gone" />
 
 </LinearLayout>
+
+</ScrollView>

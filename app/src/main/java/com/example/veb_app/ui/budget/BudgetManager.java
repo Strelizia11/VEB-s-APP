@@ -37,21 +37,21 @@ public class BudgetManager {
     }
 
     private void initializeDefaultCategories() {
-        // Income Categories - Only 4 specific categories
+        // Income Categories - Only 4 specific categories with 0.0 budget
         incomeCategories.add(new BudgetCategory("From Mama", "#4CAF50", 0.0));
         incomeCategories.add(new BudgetCategory("From Papa", "#8BC34A", 0.0));
         incomeCategories.add(new BudgetCategory("From Work", "#2E7D32", 0.0));
         incomeCategories.add(new BudgetCategory("Others", "#388E3C", 0.0));
         
-        // Expense Categories - Separate from income categories
-        expenseCategories.add(new BudgetCategory("Food & Dining", "#FF6B6B", 500.0));
-        expenseCategories.add(new BudgetCategory("Transportation", "#4ECDC4", 300.0));
-        expenseCategories.add(new BudgetCategory("Entertainment", "#45B7D1", 200.0));
-        expenseCategories.add(new BudgetCategory("Bills & Utilities", "#96CEB4", 400.0));
-        expenseCategories.add(new BudgetCategory("Shopping", "#FECA57", 300.0));
-        expenseCategories.add(new BudgetCategory("Healthcare", "#FF9FF3", 200.0));
-        expenseCategories.add(new BudgetCategory("Education", "#54A0FF", 300.0));
-        expenseCategories.add(new BudgetCategory("Other Expenses", "#5F27CD", 300.0));
+        // Expense Categories - All with 0.0 budget (no test data)
+        expenseCategories.add(new BudgetCategory("Food & Dining", "#FF6B6B", 0.0));
+        expenseCategories.add(new BudgetCategory("Transportation", "#4ECDC4", 0.0));
+        expenseCategories.add(new BudgetCategory("Entertainment", "#45B7D1", 0.0));
+        expenseCategories.add(new BudgetCategory("Bills & Utilities", "#96CEB4", 0.0));
+        expenseCategories.add(new BudgetCategory("Shopping", "#FECA57", 0.0));
+        expenseCategories.add(new BudgetCategory("Healthcare", "#FF9FF3", 0.0));
+        expenseCategories.add(new BudgetCategory("Education", "#54A0FF", 0.0));
+        expenseCategories.add(new BudgetCategory("Other Expenses", "#5F27CD", 0.0));
     }
 
     // Transaction Management

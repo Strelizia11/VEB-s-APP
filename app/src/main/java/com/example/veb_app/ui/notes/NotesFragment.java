@@ -23,6 +23,7 @@ import androidx.navigation.Navigation;
 
 import com.example.veb_app.R;
 import com.example.veb_app.databinding.FragmentNotesBinding;
+import com.example.veb_app.data.DatabaseManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -75,7 +76,7 @@ public class NotesFragment extends Fragment {
         }
 
 
-        // Load existing notes from NotesManager
+        // Load existing notes from Room Database
         loadExistingNotes();
         
         return root;
@@ -691,6 +692,9 @@ public class NotesFragment extends Fragment {
                 .setTitle("Delete Note")
                 .setMessage("Are you sure you want to delete this note?")
                 .setPositiveButton("Delete", (dialog, which) -> {
+                    // Remove the note from NotesManager
+                    NotesManager.getInstance().removeNote(note);
+                    
                     // Remove the note container from the layout
                     LinearLayout notesContainer = binding.getRoot().findViewById(R.id.notes_container);
                     notesContainer.removeView(noteContainer);

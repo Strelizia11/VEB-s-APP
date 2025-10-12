@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.veb_app.R;
 import com.example.veb_app.databinding.FragmentChecklistBinding;
+import com.example.veb_app.data.DatabaseManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;

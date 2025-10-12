@@ -26,6 +26,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.veb_app.R;
 import com.example.veb_app.databinding.FragmentBudgetBinding;
+import com.example.veb_app.data.DatabaseManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;

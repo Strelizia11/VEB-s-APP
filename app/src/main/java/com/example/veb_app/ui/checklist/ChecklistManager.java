@@ -1,5 +1,10 @@
 package com.example.veb_app.ui.checklist;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,9 +12,17 @@ import java.util.List;
 public class ChecklistManager {
     private static ChecklistManager instance;
     private final List<ChecklistFragment.Checklist> checklistList;
+    private SharedPreferences prefs;
+    private Gson gson;
 
     private ChecklistManager() {
         checklistList = new ArrayList<>();
+        gson = new Gson();
+    }
+    
+    public void initialize(Context context) {
+        prefs = context.getSharedPreferences("checklist_prefs", Context.MODE_PRIVATE);
+        loadChecklists();
     }
 
     public static synchronized ChecklistManager getInstance() {
@@ -22,6 +35,7 @@ public class ChecklistManager {
     public void addChecklist(ChecklistFragment.Checklist checklist) {
         checklistList.add(checklist);
         sortChecklists();
+        saveChecklists();
     }
 
     public void updateChecklist(ChecklistFragment.Checklist updatedChecklist) {
@@ -37,6 +51,7 @@ public class ChecklistManager {
             }
         }
         sortChecklists();
+        saveChecklists();
     }
     
     private void unpinAllOtherChecklists(long currentChecklistId) {
@@ -50,6 +65,7 @@ public class ChecklistManager {
     public void deleteChecklist(ChecklistFragment.Checklist checklist) {
         checklistList.remove(checklist);
         sortChecklists();
+        saveChecklists();
     }
 
     public List<ChecklistFragment.Checklist> getAllChecklists() {
@@ -110,6 +126,29 @@ public class ChecklistManager {
                 // Within same completion status, maintain original order (most recent first)
                 return 0; // Keep original insertion order for tasks
             });
+        }
+    }
+    
+    private void saveChecklists() {
+        if (prefs != null) {
+            String checklistsJson = gson.toJson(checklistList);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("checklists", checklistsJson);
+            editor.apply();
+        }
+    }
+    
+    private void loadChecklists() {
+        if (prefs != null) {
+            String checklistsJson = prefs.getString("checklists", "");
+            if (!checklistsJson.isEmpty()) {
+                Type listType = new TypeToken<List<ChecklistFragment.Checklist>>(){}.getType();
+                List<ChecklistFragment.Checklist> loadedChecklists = gson.fromJson(checklistsJson, listType);
+                if (loadedChecklists != null) {
+                    checklistList.clear();
+                    checklistList.addAll(loadedChecklists);
+                }
+            }
         }
     }
 }

@@ -18,16 +18,41 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
 
 import com.example.veb_app.databinding.ActivityMainBinding;
+import com.example.veb_app.data.DatabaseInitializer;
+import com.example.veb_app.data.DatabaseManager;
+import com.example.veb_app.ui.notes.NotesManager;
+import com.example.veb_app.ui.checklist.ChecklistManager;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
+    private static final int NOTIFICATION_PERMISSION_CODE = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Force light mode regardless of system theme
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        
+        // Initialize the database
+        DatabaseInitializer.initialize(this);
+        DatabaseManager.getInstance(this); // Initialize database managers
+        
+        // Initialize SharedPreferences managers
+        NotesManager.getInstance().initialize(this);
+        ChecklistManager.getInstance().initialize(this);
+        
+        // Request notification permission for Android 13+
+        requestNotificationPermission();
 
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -102,6 +127,17 @@ public class MainActivity extends AppCompatActivity {
                 
                 pageTitle.setText(title);
             });
+        }
+    }
+    
+    private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        NOTIFICATION_PERMISSION_CODE);
+            }
         }
     }
     

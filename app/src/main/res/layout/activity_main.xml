@@ -32,8 +32,16 @@ across the layout configurations
             app:itemIconTint="?attr/colorOnSurface"
             app:itemTextColor="?attr/colorOnSurface"
             app:itemBackground="@drawable/nav_item_background"
-            app:itemTextAppearance="@style/NavigationItemTextAppearance"
-            style="@style/NavigationViewStyle" />
+            app:itemTextAppearance="@style/NavigationItemTextAppearance">
+            
+            <!-- Footer with Credits -->
+            <include
+                layout="@layout/nav_footer_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom" />
+                
+        </com.google.android.material.navigation.NavigationView>
 
     </androidx.drawerlayout.widget.DrawerLayout>
 </FrameLayout>

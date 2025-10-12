@@ -15,6 +15,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.veb_app.R;
 import com.example.veb_app.databinding.FragmentHomeBinding;
+import com.example.veb_app.data.DatabaseManager;
 import com.example.veb_app.ui.notes.NotesManager;
 import com.example.veb_app.ui.notes.NotesFragment;
 import com.example.veb_app.ui.checklist.ChecklistManager;

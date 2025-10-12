@@ -21,7 +21,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.veb_app.R;
 import com.example.veb_app.databinding.FragmentCalendarNewBinding;
+import com.example.veb_app.data.DatabaseManager;
 import com.example.veb_app.ui.budget.BudgetManager;
+import com.example.veb_app.notifications.EventNotificationScheduler;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -46,6 +48,7 @@ public class CalendarFragment extends Fragment {
     private EventManager eventManager;
     private BudgetManager budgetManager;
     private HolidayManager holidayManager;
+    private EventNotificationScheduler notificationScheduler;
     private Date selectedDate;
     private String selectedEventColor = "#9CAF88";
 
@@ -69,6 +72,7 @@ public class CalendarFragment extends Fragment {
         eventManager = EventManager.getInstance();
         if (getContext() != null) {
             eventManager.initialize(getContext());
+            notificationScheduler = new EventNotificationScheduler(getContext());
         }
 
         budgetManager = BudgetManager.getInstance();
@@ -623,12 +627,18 @@ public class CalendarFragment extends Fragment {
                 if (eventManager != null) {
                     Event event = new Event(title, "Test description", date, null, "Personal", "#2196F3", true);
                     eventManager.addEvent(event);
+                    
+                    // Schedule notifications for the event
+                    if (notificationScheduler != null) {
+                        notificationScheduler.scheduleEventNotifications(event);
+                    }
+                    
                     loadCalendarData();
                     
                     // Refresh home page if it's visible
                     com.example.veb_app.ui.home.HomeFragment.refreshHomePageIfVisible();
                     
-                    Toast.makeText(getContext(), "Event created: " + title, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Event created with reminders: " + title, Toast.LENGTH_SHORT).show();
                 }
                 
                 dialog.dismiss();
@@ -683,12 +693,19 @@ public class CalendarFragment extends Fragment {
                         event.setTitle(title);
                         event.setDescription(description);
                         eventManager.updateEvent(event);
+                        
+                        // Reschedule notifications with updated info
+                        if (notificationScheduler != null) {
+                            notificationScheduler.cancelEventNotifications(event);
+                            notificationScheduler.scheduleEventNotifications(event);
+                        }
+                        
                         loadCalendarData();
                         
                         // Refresh home page if it's visible
                         com.example.veb_app.ui.home.HomeFragment.refreshHomePageIfVisible();
                         
-                        Toast.makeText(getContext(), "Event updated: " + title, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Event updated with reminders: " + title, Toast.LENGTH_SHORT).show();
                     }
                     
                     dialog.dismiss();
@@ -705,6 +722,11 @@ public class CalendarFragment extends Fragment {
                 
                 try {
                     if (eventManager != null) {
+                        // Cancel notifications for the event
+                        if (notificationScheduler != null) {
+                            notificationScheduler.cancelEventNotifications(event);
+                        }
+                        
                         eventManager.deleteEvent(event);
                         loadCalendarData();
                         
