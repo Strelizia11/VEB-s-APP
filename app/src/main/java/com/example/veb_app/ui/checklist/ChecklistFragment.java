@@ -26,6 +26,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ChecklistFragment extends Fragment {
@@ -51,6 +52,23 @@ public class ChecklistFragment extends Fragment {
                 public void onClick(View v) {
                     showCreateChecklistDialog();
                 }
+            });
+        }
+
+        // Setup search functionality
+        TextInputEditText etSearch = root.findViewById(R.id.et_search);
+        if (etSearch != null) {
+            etSearch.addTextChangedListener(new android.text.TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    searchChecklists(s.toString());
+                }
+
+                @Override
+                public void afterTextChanged(android.text.Editable s) {}
             });
         }
 
@@ -374,9 +392,15 @@ public class ChecklistFragment extends Fragment {
 
         // Add tasks to container
         List<Checklist.Task> sortedTasks = new ArrayList<>(checklist.getTasks());
-        // Sort tasks using ChecklistManager method
-        ChecklistManager.getInstance().sortTasksInChecklist(checklist);
-        sortedTasks = checklist.getTasks();
+        // Sort tasks for display only (don't modify original data)
+        Collections.sort(sortedTasks, (task1, task2) -> {
+            // Incomplete tasks first
+            if (!task1.isCompleted() && task2.isCompleted()) return -1;
+            if (task1.isCompleted() && !task2.isCompleted()) return 1;
+            
+            // Within same completion status, maintain original order
+            return 0; // Keep original insertion order for tasks
+        });
 
         // Clear existing tasks
         tasksContainer.removeAllViews();
@@ -711,6 +735,69 @@ public class ChecklistFragment extends Fragment {
         
         // Add checklists to grid in sorted order
         for (Checklist checklist : sortedChecklists) {
+            View checklistContainer = createChecklistContainer(checklist);
+            checklistsGrid.addView(checklistContainer);
+        }
+    }
+
+    private void searchChecklists(String query) {
+        if (binding == null) return;
+        
+        LinearLayout checklistsGrid = binding.getRoot().findViewById(R.id.checklists_grid);
+        if (checklistsGrid == null) return;
+        
+        // Clear existing checklists from the grid
+        checklistsGrid.removeAllViews();
+        
+        // Get all checklists from ChecklistManager
+        List<Checklist> allChecklists = ChecklistManager.getInstance().getAllChecklists();
+        
+        if (query.trim().isEmpty()) {
+            // No search query, show all checklists
+            loadExistingChecklists();
+            return;
+        }
+        
+        // Filter checklists based on search query
+        List<Checklist> filteredChecklists = new ArrayList<>();
+        String lowerQuery = query.toLowerCase();
+        
+        for (Checklist checklist : allChecklists) {
+            // Search in title
+            if (checklist.getTitle().toLowerCase().contains(lowerQuery)) {
+                filteredChecklists.add(checklist);
+            } else {
+                // Search in task text
+                for (Checklist.Task task : checklist.getTasks()) {
+                    if (task.getText().toLowerCase().contains(lowerQuery)) {
+                        filteredChecklists.add(checklist);
+                        break; // Add checklist only once even if multiple tasks match
+                    }
+                }
+            }
+        }
+        
+        if (filteredChecklists.isEmpty()) {
+            // Show empty state
+            binding.textChecklist.setVisibility(View.VISIBLE);
+            return;
+        }
+        
+        // Hide default text
+        binding.textChecklist.setVisibility(View.GONE);
+        
+        // Sort checklists: pinned first, then by ID (most recent first)
+        filteredChecklists.sort((checklist1, checklist2) -> {
+            // Pinned checklists first
+            if (checklist1.isPinned() && !checklist2.isPinned()) return -1;
+            if (!checklist1.isPinned() && checklist2.isPinned()) return 1;
+            
+            // Then by ID (most recent first)
+            return Long.compare(checklist2.getId(), checklist1.getId());
+        });
+        
+        // Add filtered checklists to grid
+        for (Checklist checklist : filteredChecklists) {
             View checklistContainer = createChecklistContainer(checklist);
             checklistsGrid.addView(checklistContainer);
         }

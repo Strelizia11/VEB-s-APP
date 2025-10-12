@@ -19,6 +19,7 @@ import com.example.veb_app.ui.notes.NotesManager;
 import com.example.veb_app.ui.notes.NotesFragment;
 import com.example.veb_app.ui.checklist.ChecklistManager;
 import com.example.veb_app.ui.checklist.ChecklistFragment;
+import com.example.veb_app.ui.budget.BudgetManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import android.widget.LinearLayout;
@@ -40,9 +41,10 @@ public class HomeFragment extends Fragment {
         final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         
-        // Setup featured note and checklist display
-        setupFeaturedNote(root);
-        setupFeaturedChecklist(root);
+            // Setup featured note and checklist display
+            setupFeaturedNote(root);
+            setupFeaturedChecklist(root);
+            setupBudgetOverview(root);
         
         return root;
     }
@@ -50,11 +52,12 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Refresh featured note and checklist when returning to home
-        if (binding != null) {
-            setupFeaturedNote(binding.getRoot());
-            setupFeaturedChecklist(binding.getRoot());
-        }
+            // Refresh featured note and checklist when returning to home
+            if (binding != null) {
+                setupFeaturedNote(binding.getRoot());
+                setupFeaturedChecklist(binding.getRoot());
+                setupBudgetOverview(binding.getRoot());
+            }
     }
 
     @Override
@@ -185,5 +188,84 @@ public class HomeFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private void setupBudgetOverview(View root) {
+        MaterialCardView cardBudgetOverview = root.findViewById(R.id.card_budget_overview);
+        TextView tvBudgetTitleHome = root.findViewById(R.id.tv_budget_title_home);
+        TextView tvBudgetIncomeHome = root.findViewById(R.id.tv_budget_income_home);
+        TextView tvBudgetExpensesHome = root.findViewById(R.id.tv_budget_expenses_home);
+        TextView tvBudgetRemainingHome = root.findViewById(R.id.tv_budget_remaining_home);
+        com.google.android.material.progressindicator.LinearProgressIndicator progressBudget = root.findViewById(R.id.progress_budget_home);
+        MaterialButton btnViewBudget = root.findViewById(R.id.btn_view_budget);
+
+        // Initialize BudgetManager
+        BudgetManager budgetManager = BudgetManager.getInstance();
+        if (getContext() != null) {
+            budgetManager.initialize(getContext());
+        }
+
+        // Get budget data
+        double monthlyBudget = budgetManager.getMonthlyBudget();
+        double totalIncome = budgetManager.getTotalIncomeThisMonth();
+        double totalSpent = budgetManager.getTotalSpentThisMonth();
+        double remaining = budgetManager.getRemainingBudget();
+
+        // Format currency
+        java.text.DecimalFormat currencyFormat = new java.text.DecimalFormat("₱#,##0.00");
+
+        // Update month display
+        if (tvBudgetTitleHome != null) {
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            java.text.SimpleDateFormat monthFormat = new java.text.SimpleDateFormat("MMMM yyyy", java.util.Locale.getDefault());
+            tvBudgetTitleHome.setText(monthFormat.format(cal.getTime()));
+        }
+
+        // Update monthly income
+        if (tvBudgetIncomeHome != null) {
+            tvBudgetIncomeHome.setText("Income " + currencyFormat.format(totalIncome));
+        }
+
+        // Update monthly expenses
+        if (tvBudgetExpensesHome != null) {
+            tvBudgetExpensesHome.setText("Expenses " + currencyFormat.format(totalSpent));
+        }
+
+        // Update remaining budget (now on top right)
+        if (tvBudgetRemainingHome != null) {
+            tvBudgetRemainingHome.setText(currencyFormat.format(remaining));
+        }
+
+        if (progressBudget != null) {
+            int progress = monthlyBudget > 0 ? (int) ((totalSpent / monthlyBudget) * 100) : 0;
+            progressBudget.setProgress(progress);
+        }
+
+        // Setup View Budget button
+        if (btnViewBudget != null) {
+            btnViewBudget.setOnClickListener(v -> {
+                // Trigger the NavigationView's built-in navigation mechanism
+                if (getActivity() != null) {
+                    com.google.android.material.navigation.NavigationView navView = getActivity().findViewById(R.id.nav_view);
+                    if (navView != null) {
+                        android.view.MenuItem budgetMenuItem = navView.getMenu().findItem(R.id.nav_budget);
+                        if (budgetMenuItem != null) {
+                            // Trigger the menu item's click event which will use NavigationUI
+                            budgetMenuItem.setChecked(true);
+                            
+                            // Get the NavController and navigate using NavigationUI
+                            androidx.navigation.fragment.NavHostFragment navHostFragment = 
+                                (androidx.navigation.fragment.NavHostFragment) getActivity().getSupportFragmentManager()
+                                    .findFragmentById(R.id.nav_host_fragment_content_main);
+                            if (navHostFragment != null) {
+                                NavController navController = navHostFragment.getNavController();
+                                // Use NavigationUI to handle the navigation properly
+                                androidx.navigation.ui.NavigationUI.onNavDestinationSelected(budgetMenuItem, navController);
+                            }
+                        }
+                    }
+                }
+            });
+        }
     }
 }

@@ -7,13 +7,55 @@
     android:background="@color/md_theme_light_background"
     tools:context=".ui.checklist.ChecklistFragment">
 
-    <!-- Checklists Grid (Google Keep style) -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingTop="@dimen/spacing_8"
-        android:paddingBottom="@dimen/spacing_80">
+        <!-- Search Bar -->
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorSurface"
+            app:elevation="@dimen/elevation_2">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_16">
+
+                <!-- Search Field -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Search checklists..."
+                    app:startIconDrawable="@drawable/ic_search_24dp"
+                    app:boxBackgroundMode="filled"
+                    app:boxBackgroundColor="?attr/colorSurfaceVariant"
+                    app:boxCornerRadiusTopStart="@dimen/corner_radius_medium"
+                    app:boxCornerRadiusTopEnd="@dimen/corner_radius_medium"
+                    app:boxCornerRadiusBottomStart="@dimen/corner_radius_medium"
+                    app:boxCornerRadiusBottomEnd="@dimen/corner_radius_medium"
+                    app:boxStrokeWidth="0dp"
+                    style="@style/Widget.Material3.TextInputLayout.FilledBox">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_search"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:textColorHint="?attr/colorOnSurfaceVariant" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <!-- Checklists Grid (Google Keep style) -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingTop="@dimen/spacing_16"
+            android:paddingStart="@dimen/spacing_16"
+            android:paddingEnd="@dimen/spacing_16"
+            android:paddingBottom="@dimen/spacing_80"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <!-- Grid container for checklists -->
         <LinearLayout
@@ -24,15 +66,16 @@
 
     </ScrollView>
 
-    <!-- Empty State (Google Keep style) -->
-    <LinearLayout
-        android:id="@+id/layout_empty_state"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="@dimen/spacing_32"
-        android:visibility="gone">
+        <!-- Empty State (Google Keep style) -->
+        <LinearLayout
+            android:id="@+id/layout_empty_state"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="@dimen/spacing_32"
+            android:visibility="gone"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <ImageView
             android:layout_width="120dp"

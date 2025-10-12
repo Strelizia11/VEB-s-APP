@@ -184,17 +184,126 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- No Checklists Message -->
-    <TextView
-        android:id="@+id/tv_no_checklists_message"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="No checklists yet. Create your first checklist!"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:gravity="center"
-        android:padding="@dimen/spacing_16"
-        android:visibility="gone" />
+        <!-- No Checklists Message -->
+        <TextView
+            android:id="@+id/tv_no_checklists_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No checklists yet. Create your first checklist!"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:gravity="center"
+            android:padding="@dimen/spacing_16"
+            android:visibility="gone" />
+
+        <!-- Budget Overview Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Budget Overview"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/md_theme_light_onBackground"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Budget Overview Container -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_budget_overview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="@color/sage_green_light"
+            app:cardCornerRadius="@dimen/corner_radius_large"
+            app:cardElevation="@dimen/elevation_8"
+            app:strokeWidth="0dp"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_16">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="@dimen/spacing_8">
+
+                    <TextView
+                        android:id="@+id/tv_budget_title_home"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="October 2025"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="@color/md_theme_light_onBackground" />
+
+                    <TextView
+                        android:id="@+id/tv_budget_remaining_home"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="₱0.00"
+                        android:textAppearance="?attr/textAppearanceTitleLarge"
+                        android:textColor="@color/md_theme_light_onBackground"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="@dimen/spacing_8">
+
+                    <TextView
+                        android:id="@+id/tv_budget_income_home"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Income ₱0.00"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="@color/md_theme_light_onBackground"
+                        android:alpha="0.8" />
+
+                    <TextView
+                        android:id="@+id/tv_budget_expenses_home"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Expenses ₱0.00"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="@color/md_theme_light_onBackground"
+                        android:alpha="0.8"
+                        android:gravity="end" />
+                </LinearLayout>
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/progress_budget_home"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/progress_bar_height_thick"
+                    android:progress="0"
+                    app:indicatorColor="@color/sage_green"
+                    app:trackColor="?attr/colorSurfaceVariant"
+                    app:trackThickness="8dp"
+                    app:trackCornerRadius="4dp"
+                    android:layout_marginBottom="@dimen/spacing_12" />
+
+                <!-- View Budget Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_view_budget"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:text="View Budget"
+                    app:cornerRadius="@dimen/corner_radius_medium" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
     <!-- Legacy TextView for Java compatibility -->
     <TextView

@@ -10,7 +10,7 @@ public class ChecklistViewModel extends ViewModel {
 
     public ChecklistViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("Checklist - Organize your tasks and goals");
+        mText.setValue("");
     }
 
     public LiveData<String> getText() {

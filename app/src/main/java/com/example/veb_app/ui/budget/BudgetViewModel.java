@@ -10,7 +10,7 @@ public class BudgetViewModel extends ViewModel {
 
     public BudgetViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("Budget - Track your finances and expenses");
+        mText.setValue("");
     }
 
     public LiveData<String> getText() {
