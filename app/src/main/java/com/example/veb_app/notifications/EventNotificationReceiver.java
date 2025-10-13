@@ -23,7 +23,6 @@ public class EventNotificationReceiver extends BroadcastReceiver {
         android.util.Log.d("EventNotificationReceiver", "Notification received!");
         
         String eventTitle = intent.getStringExtra(EXTRA_EVENT_TITLE);
-        String eventDescription = intent.getStringExtra(EXTRA_EVENT_DESCRIPTION);
         boolean isDayBefore = intent.getBooleanExtra(EXTRA_IS_DAY_BEFORE, false);
 
         android.util.Log.d("EventNotificationReceiver", "Event title: " + eventTitle);
@@ -35,7 +34,7 @@ public class EventNotificationReceiver extends BroadcastReceiver {
         }
 
         createNotificationChannel(context);
-        showNotification(context, eventTitle, eventDescription, isDayBefore);
+        showNotification(context, eventTitle, isDayBefore);
     }
 
     private void createNotificationChannel(Context context) {
@@ -55,7 +54,7 @@ public class EventNotificationReceiver extends BroadcastReceiver {
         }
     }
 
-    private void showNotification(Context context, String title, String description, boolean isDayBefore) {
+    private void showNotification(Context context, String title, boolean isDayBefore) {
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -78,10 +77,6 @@ public class EventNotificationReceiver extends BroadcastReceiver {
         } else {
             notificationTitle = "Event Today!";
             message = title;
-        }
-
-        if (description != null && !description.isEmpty()) {
-            message += "\n" + description;
         }
 
         // Build the notification

@@ -625,7 +625,10 @@ public class CalendarFragment extends Fragment {
                 }
                 
                 if (eventManager != null) {
-                    Event event = new Event(title, "Test description", date, null, "Personal", "#2196F3", true);
+                    TextInputEditText etDescription = dialogView.findViewById(R.id.et_event_description);
+                    String description = etDescription != null ? etDescription.getText().toString().trim() : "";
+                    
+                    Event event = new Event(title, description, date, null, "Personal", "#2196F3", true);
                     eventManager.addEvent(event);
                     
                     // Schedule notifications for the event

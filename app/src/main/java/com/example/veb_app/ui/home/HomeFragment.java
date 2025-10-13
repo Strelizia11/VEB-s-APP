@@ -445,7 +445,7 @@ public class HomeFragment extends Fragment {
                 if (eventText.length() > 0) eventText.append("\n");
                 String timeText = event.getTime() != null && !event.getTime().isEmpty() ? 
                                  " (" + event.getTime() + ")" : "";
-                eventText.append("Event: ").append(event.getTitle()).append(timeText);
+                eventText.append(event.getTitle()).append(timeText);
             }
         }
 
