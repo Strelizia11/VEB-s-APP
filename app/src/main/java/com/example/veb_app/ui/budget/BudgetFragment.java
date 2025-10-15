@@ -549,6 +549,7 @@ public class BudgetFragment extends Fragment {
         // Initialize with expense selected
         selectedTransactionType = BudgetManager.Transaction.TransactionType.EXPENSE;
         updateTransactionTypeButtons(btnIncome, btnExpense);
+        updateCategoryDropdown(actvCategory);
     }
 
     private void setupCategoryDropdown(AutoCompleteTextView actvCategory) {

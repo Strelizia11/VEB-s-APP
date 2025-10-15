@@ -450,6 +450,9 @@ public class ChecklistFragment extends Fragment {
         CheckBox cbTask = taskView.findViewById(R.id.cb_task);
         TextView tvTaskText = taskView.findViewById(R.id.tv_task_text);
         
+        // Debug: Log task state when creating view
+        android.util.Log.d("ChecklistFragment", "Creating task view for: '" + task.getText() + "' completed: " + task.isCompleted());
+        
         // Handle empty tasks (blank indicators)
         if (task.getText().isEmpty()) {
             // Show blank task indicator
@@ -480,6 +483,7 @@ public class ChecklistFragment extends Fragment {
             
             // Set checkbox listener
             cbTask.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                android.util.Log.d("ChecklistFragment", "Checkbox changed for task: '" + task.getText() + "' to: " + isChecked);
                 task.setCompleted(isChecked);
                 ChecklistManager.getInstance().updateChecklist(checklist);
                 
@@ -714,6 +718,8 @@ public class ChecklistFragment extends Fragment {
         // Get all checklists from ChecklistManager
         List<Checklist> allChecklists = ChecklistManager.getInstance().getAllChecklists();
         
+        android.util.Log.d("ChecklistFragment", "Loading existing checklists. Count: " + allChecklists.size());
+        
         if (allChecklists.isEmpty()) {
             // Show empty state
             binding.textChecklist.setVisibility(View.VISIBLE);
@@ -733,6 +739,14 @@ public class ChecklistFragment extends Fragment {
             // Then by ID (most recent first)
             return Long.compare(checklist2.getId(), checklist1.getId());
         });
+        
+        // Debug: Log all task states before creating views
+        for (Checklist checklist : sortedChecklists) {
+            android.util.Log.d("ChecklistFragment", "Checklist: " + checklist.getTitle());
+            for (Checklist.Task task : checklist.getTasks()) {
+                android.util.Log.d("ChecklistFragment", "Task: '" + task.getText() + "' completed: " + task.isCompleted());
+            }
+        }
         
         // Add checklists to grid in sorted order
         for (Checklist checklist : sortedChecklists) {
@@ -811,6 +825,14 @@ public class ChecklistFragment extends Fragment {
         private boolean isPinned;
         private long id;
 
+        // Default constructor for JSON deserialization
+        public Checklist() {
+            this.title = "";
+            this.tasks = new ArrayList<>();
+            this.isPinned = false;
+            this.id = System.currentTimeMillis();
+        }
+
         public Checklist(String title, List<Task> tasks) {
             this.title = title;
             this.tasks = tasks;
@@ -837,18 +859,28 @@ public class ChecklistFragment extends Fragment {
         // Task class
         public static class Task {
             private String text;
-            private boolean completed;
+            private boolean taskCompleted; // Rename field to avoid conflicts
+
+            // Default constructor for JSON deserialization
+            public Task() {
+                this.text = "";
+                this.taskCompleted = false;
+            }
 
             public Task(String text, boolean completed) {
                 this.text = text;
-                this.completed = completed;
+                this.taskCompleted = completed;
             }
 
             public String getText() { return text; }
-            public boolean isCompleted() { return completed; }
+            public boolean isCompleted() { return taskCompleted; }
             
             public void setText(String text) { this.text = text; }
-            public void setCompleted(boolean completed) { this.completed = completed; }
+            public void setCompleted(boolean completed) { this.taskCompleted = completed; }
+            
+            // Gson getters/setters
+            public boolean getTaskCompleted() { return taskCompleted; }
+            public void setTaskCompleted(boolean taskCompleted) { this.taskCompleted = taskCompleted; }
         }
     }
 }

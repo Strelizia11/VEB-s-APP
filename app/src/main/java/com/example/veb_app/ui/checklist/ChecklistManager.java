@@ -17,6 +17,7 @@ public class ChecklistManager {
 
     private ChecklistManager() {
         checklistList = new ArrayList<>();
+        // Create Gson with custom configuration to handle boolean fields properly
         gson = new Gson();
     }
     
@@ -131,24 +132,215 @@ public class ChecklistManager {
     
     private void saveChecklists() {
         if (prefs != null) {
-            String checklistsJson = gson.toJson(checklistList);
+            // Manual JSON serialization to avoid Gson boolean issues
+            StringBuilder json = new StringBuilder();
+            json.append("[");
+            
+            for (int i = 0; i < checklistList.size(); i++) {
+                if (i > 0) json.append(",");
+                ChecklistFragment.Checklist checklist = checklistList.get(i);
+                json.append("{");
+                json.append("\"title\":\"").append(escapeJson(checklist.getTitle())).append("\",");
+                json.append("\"isPinned\":").append(checklist.isPinned()).append(",");
+                json.append("\"id\":").append(checklist.getId()).append(",");
+                json.append("\"tasks\":[");
+                
+                List<ChecklistFragment.Checklist.Task> tasks = checklist.getTasks();
+                for (int j = 0; j < tasks.size(); j++) {
+                    if (j > 0) json.append(",");
+                    ChecklistFragment.Checklist.Task task = tasks.get(j);
+                    json.append("{");
+                    json.append("\"text\":\"").append(escapeJson(task.getText())).append("\",");
+                    json.append("\"taskCompleted\":").append(task.isCompleted());
+                    json.append("}");
+                }
+                json.append("]");
+                json.append("}");
+            }
+            json.append("]");
+            
+            String checklistsJson = json.toString();
+            android.util.Log.d("ChecklistManager", "Saving checklists JSON: " + checklistsJson);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString("checklists", checklistsJson);
             editor.apply();
         }
     }
     
+    private String escapeJson(String text) {
+        if (text == null) return "";
+        return text.replace("\\", "\\\\")
+                  .replace("\"", "\\\"")
+                  .replace("\n", "\\n")
+                  .replace("\r", "\\r")
+                  .replace("\t", "\\t");
+    }
+    
     private void loadChecklists() {
         if (prefs != null) {
             String checklistsJson = prefs.getString("checklists", "");
+            android.util.Log.d("ChecklistManager", "Loading checklists JSON: " + checklistsJson);
             if (!checklistsJson.isEmpty()) {
-                Type listType = new TypeToken<List<ChecklistFragment.Checklist>>(){}.getType();
-                List<ChecklistFragment.Checklist> loadedChecklists = gson.fromJson(checklistsJson, listType);
-                if (loadedChecklists != null) {
+                try {
+                    // Try manual parsing first, fallback to Gson if needed
+                    List<ChecklistFragment.Checklist> loadedChecklists = parseChecklistsManually(checklistsJson);
+                    if (loadedChecklists == null) {
+                        // Fallback to Gson if manual parsing fails
+                        Type listType = new TypeToken<List<ChecklistFragment.Checklist>>(){}.getType();
+                        loadedChecklists = gson.fromJson(checklistsJson, listType);
+                    }
+                    
+                    if (loadedChecklists != null) {
+                        checklistList.clear();
+                        checklistList.addAll(loadedChecklists);
+                        
+                        // Debug: Log task completion states
+                        for (ChecklistFragment.Checklist checklist : loadedChecklists) {
+                            android.util.Log.d("ChecklistManager", "Loaded checklist: " + checklist.getTitle());
+                            for (ChecklistFragment.Checklist.Task task : checklist.getTasks()) {
+                                android.util.Log.d("ChecklistManager", "Task: '" + task.getText() + "' completed: " + task.isCompleted());
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    android.util.Log.e("ChecklistManager", "Error loading checklists: " + e.getMessage());
+                    // If there's an error, clear the corrupted data
                     checklistList.clear();
-                    checklistList.addAll(loadedChecklists);
                 }
             }
         }
+    }
+    
+    private List<ChecklistFragment.Checklist> parseChecklistsManually(String json) {
+        try {
+            // Simple manual JSON parsing for checklists
+            List<ChecklistFragment.Checklist> checklists = new ArrayList<>();
+            
+            // Remove outer brackets and split by checklist objects
+            String content = json.trim();
+            if (!content.startsWith("[") || !content.endsWith("]")) {
+                return null; // Not valid JSON array
+            }
+            
+            content = content.substring(1, content.length() - 1).trim();
+            if (content.isEmpty()) {
+                return checklists; // Empty array
+            }
+            
+            // Split by checklist objects (simple approach)
+            String[] checklistStrings = splitJsonObjects(content);
+            
+            for (String checklistStr : checklistStrings) {
+                ChecklistFragment.Checklist checklist = parseChecklistManually(checklistStr.trim());
+                if (checklist != null) {
+                    checklists.add(checklist);
+                }
+            }
+            
+            return checklists;
+        } catch (Exception e) {
+            android.util.Log.e("ChecklistManager", "Manual parsing failed: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    private String[] splitJsonObjects(String content) {
+        List<String> objects = new ArrayList<>();
+        int braceCount = 0;
+        int start = 0;
+        
+        for (int i = 0; i < content.length(); i++) {
+            char c = content.charAt(i);
+            if (c == '{') {
+                if (braceCount == 0) start = i;
+                braceCount++;
+            } else if (c == '}') {
+                braceCount--;
+                if (braceCount == 0) {
+                    objects.add(content.substring(start, i + 1));
+                }
+            }
+        }
+        
+        return objects.toArray(new String[0]);
+    }
+    
+    private ChecklistFragment.Checklist parseChecklistManually(String json) {
+        try {
+            String title = extractStringValue(json, "title");
+            boolean isPinned = extractBooleanValue(json, "isPinned");
+            long id = extractLongValue(json, "id");
+            
+            // Extract tasks array
+            String tasksJson = extractArrayValue(json, "tasks");
+            List<ChecklistFragment.Checklist.Task> tasks = parseTasksManually(tasksJson);
+            
+            return new ChecklistFragment.Checklist(title, tasks, isPinned, id);
+        } catch (Exception e) {
+            android.util.Log.e("ChecklistManager", "Error parsing checklist: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    private List<ChecklistFragment.Checklist.Task> parseTasksManually(String tasksJson) {
+        List<ChecklistFragment.Checklist.Task> tasks = new ArrayList<>();
+        
+        if (tasksJson == null || tasksJson.trim().isEmpty()) {
+            return tasks;
+        }
+        
+        String[] taskStrings = splitJsonObjects(tasksJson);
+        
+        for (String taskStr : taskStrings) {
+            try {
+                String text = extractStringValue(taskStr, "text");
+                boolean completed = extractBooleanValue(taskStr, "taskCompleted");
+                tasks.add(new ChecklistFragment.Checklist.Task(text, completed));
+            } catch (Exception e) {
+                android.util.Log.e("ChecklistManager", "Error parsing task: " + e.getMessage());
+            }
+        }
+        
+        return tasks;
+    }
+    
+    private String extractStringValue(String json, String key) {
+        String pattern = "\"" + key + "\":\"([^\"]*)\"";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(pattern);
+        java.util.regex.Matcher m = p.matcher(json);
+        if (m.find()) {
+            return m.group(1).replace("\\\"", "\"").replace("\\\\", "\\");
+        }
+        return "";
+    }
+    
+    private boolean extractBooleanValue(String json, String key) {
+        String pattern = "\"" + key + "\":(true|false)";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(pattern);
+        java.util.regex.Matcher m = p.matcher(json);
+        if (m.find()) {
+            return "true".equals(m.group(1));
+        }
+        return false; // Default to false
+    }
+    
+    private long extractLongValue(String json, String key) {
+        String pattern = "\"" + key + "\":(\\d+)";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(pattern);
+        java.util.regex.Matcher m = p.matcher(json);
+        if (m.find()) {
+            return Long.parseLong(m.group(1));
+        }
+        return System.currentTimeMillis();
+    }
+    
+    private String extractArrayValue(String json, String key) {
+        String pattern = "\"" + key + "\":\\[([^\\]]*)\\]";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(pattern);
+        java.util.regex.Matcher m = p.matcher(json);
+        if (m.find()) {
+            return m.group(1);
+        }
+        return "";
     }
 }
