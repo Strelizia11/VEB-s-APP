@@ -24,4 +24,5 @@
     <string name="image_view_item_transform_content_description">Represents an image view in the
         item
     </string>
+    <string name="checklist_progress_format">%1$d of %2$d completed</string>
 </resources>

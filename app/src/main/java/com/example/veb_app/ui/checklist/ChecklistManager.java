@@ -85,6 +85,15 @@ public class ChecklistManager {
     public int getChecklistsCount() {
         return checklistList.size();
     }
+    
+    /**
+     * Force save all checklist data immediately
+     * Use this when you need to ensure data is persisted (e.g., on app pause)
+     */
+    public void forceSaveAllData() {
+        android.util.Log.d("ChecklistManager", "Force saving all checklist data");
+        saveChecklists();
+    }
 
     // Method to get the featured checklist (pinned or most recent)
     public ChecklistFragment.Checklist getFeaturedChecklist() {
@@ -121,8 +130,8 @@ public class ChecklistManager {
         if (checklist != null && checklist.getTasks() != null) {
             Collections.sort(checklist.getTasks(), (task1, task2) -> {
                 // Incomplete tasks first
-                if (!task1.isCompleted() && task2.isCompleted()) return -1;
-                if (task1.isCompleted() && !task2.isCompleted()) return 1;
+                if (!task1.isChecked() && task2.isChecked()) return -1;
+                if (task1.isChecked() && !task2.isChecked()) return 1;
                 
                 // Within same completion status, maintain original order (most recent first)
                 return 0; // Keep original insertion order for tasks
@@ -151,7 +160,9 @@ public class ChecklistManager {
                     ChecklistFragment.Checklist.Task task = tasks.get(j);
                     json.append("{");
                     json.append("\"text\":\"").append(escapeJson(task.getText())).append("\",");
-                    json.append("\"taskCompleted\":").append(task.isCompleted());
+                    boolean completed = task.isChecked();
+                    json.append("\"taskCompleted\":").append(completed);
+                    android.util.Log.d("ChecklistManager", "Saving task: '" + task.getText() + "' completed: " + completed);
                     json.append("}");
                 }
                 json.append("]");
@@ -198,7 +209,7 @@ public class ChecklistManager {
                         for (ChecklistFragment.Checklist checklist : loadedChecklists) {
                             android.util.Log.d("ChecklistManager", "Loaded checklist: " + checklist.getTitle());
                             for (ChecklistFragment.Checklist.Task task : checklist.getTasks()) {
-                                android.util.Log.d("ChecklistManager", "Task: '" + task.getText() + "' completed: " + task.isCompleted());
+                                android.util.Log.d("ChecklistManager", "Task: '" + task.getText() + "' completed: " + task.isChecked());
                             }
                         }
                     }
@@ -295,6 +306,7 @@ public class ChecklistManager {
             try {
                 String text = extractStringValue(taskStr, "text");
                 boolean completed = extractBooleanValue(taskStr, "taskCompleted");
+                android.util.Log.d("ChecklistManager", "Parsed task: '" + text + "' completed: " + completed + " from JSON: " + taskStr);
                 tasks.add(new ChecklistFragment.Checklist.Task(text, completed));
             } catch (Exception e) {
                 android.util.Log.e("ChecklistManager", "Error parsing task: " + e.getMessage());
@@ -319,9 +331,12 @@ public class ChecklistManager {
         java.util.regex.Pattern p = java.util.regex.Pattern.compile(pattern);
         java.util.regex.Matcher m = p.matcher(json);
         if (m.find()) {
-            return "true".equals(m.group(1));
+            boolean result = "true".equals(m.group(1));
+            android.util.Log.d("ChecklistManager", "Extracted boolean for " + key + ": " + result + " from: " + m.group(1));
+            return result;
         }
-        return false; // Default to false
+        android.util.Log.w("ChecklistManager", "Could not extract boolean for " + key + " from JSON: " + json);
+        return false; // Default to false - this ensures tasks are not completed by default
     }
     
     private long extractLongValue(String json, String key) {

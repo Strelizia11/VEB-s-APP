@@ -33,14 +33,35 @@ import java.util.List;
 public class ChecklistFragment extends Fragment {
 
     private FragmentChecklistBinding binding;
+    private static boolean isFirstLoad = true;
+    private boolean isCurrentlyLoading = false;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Don't use setRetainInstance for navigation - it's for configuration changes only
+        android.util.Log.d("ChecklistFragment", "onCreate: Fragment created");
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         ChecklistViewModel checklistViewModel =
-                new ViewModelProvider(this).get(ChecklistViewModel.class);
+                new ViewModelProvider(requireActivity()).get(ChecklistViewModel.class);
 
         binding = FragmentChecklistBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+        
+        // Initialize ChecklistManager and TaskRepository if not already done
+        if (getContext() != null) {
+            ChecklistManager.getInstance().initialize(getContext());
+            TaskRepository.getInstance().initialize(getContext());
+            android.util.Log.d("ChecklistFragment", "ChecklistManager initialized with " + ChecklistManager.getInstance().getChecklistsCount() + " checklists");
+            
+            // Ensure TaskRepository is properly initialized
+            if (TaskRepository.getInstance().getAllTaskStates() != null) {
+                android.util.Log.d("ChecklistFragment", "TaskRepository initialized with " + TaskRepository.getInstance().getAllTaskStates().size() + " saved states");
+            }
+        }
 
         final TextView textView = binding.textChecklist;
         checklistViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
@@ -76,20 +97,251 @@ public class ChecklistFragment extends Fragment {
         // Load existing checklists from ChecklistManager
         loadExistingChecklists();
         
+        // Log fragment state for debugging
+        android.util.Log.d("ChecklistFragment", "onCreateView: Fragment view created, retain instance: " + getRetainInstance());
+        
         return root;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        // Reload checklists when returning to this fragment
-        loadExistingChecklists();
+        android.util.Log.d("ChecklistFragment", "onResume: Fragment resumed");
+        
+        if (binding == null) {
+            android.util.Log.d("ChecklistFragment", "onResume: Binding is null, skipping");
+            return;
+        }
+        
+        // Get ViewModel scoped to activity to maintain state across navigation
+        ChecklistViewModel viewModel = new ViewModelProvider(requireActivity()).get(ChecklistViewModel.class);
+        
+        // Only reload if we don't have any checklists displayed or if data is not loaded
+        LinearLayout checklistsGrid = binding.getRoot().findViewById(R.id.checklists_grid);
+        if (checklistsGrid == null || checklistsGrid.getChildCount() == 0 || !viewModel.isDataLoaded() || !viewModel.isFragmentLoaded()) {
+            android.util.Log.d("ChecklistFragment", "onResume: Loading checklists (grid=" + (checklistsGrid != null) + ", count=" + (checklistsGrid != null ? checklistsGrid.getChildCount() : 0) + ", dataLoaded=" + viewModel.isDataLoaded() + ", fragmentLoaded=" + viewModel.isFragmentLoaded() + ")");
+            loadExistingChecklists();
+        } else {
+            android.util.Log.d("ChecklistFragment", "onResume: Views exist, preserving state");
+            // Even if views exist, ensure we're displaying the latest data from ChecklistManager
+            refreshChecklistViews();
+        }
+    }
+    
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Save all task states to SharedPreferences when user navigates away
+        android.util.Log.d("ChecklistFragment", "onPause: Saving all task states to SharedPreferences");
+        if (binding != null) {
+            saveAllTaskStatesToSharedPreferences();
+        } else {
+            android.util.Log.d("ChecklistFragment", "onPause: Binding is null, skipping save");
+        }
+    }
+    
+    /**
+     * Save all task states to SharedPreferences using TaskRepository
+     */
+    private void saveAllTaskStatesToSharedPreferences() {
+        if (binding == null) return;
+        
+        LinearLayout checklistsGrid = binding.getRoot().findViewById(R.id.checklists_grid);
+        if (checklistsGrid == null) return;
+        
+        // Iterate through all checklist containers and save their current task states
+        for (int i = 0; i < checklistsGrid.getChildCount(); i++) {
+            View checklistContainer = checklistsGrid.getChildAt(i);
+            if (checklistContainer.getTag() != null) {
+                Checklist checklist = (Checklist) checklistContainer.getTag();
+                
+                // Update the checklist data with current view states
+                updateChecklistFromViews(checklist, checklistContainer);
+                
+                // Save task states to SharedPreferences
+                TaskRepository.getInstance().saveAllTaskStates(checklist);
+                
+                // Also save to ChecklistManager for consistency
+                ChecklistManager.getInstance().updateChecklist(checklist);
+            }
+        }
+        
+        // Force save all data to ensure persistence
+        ChecklistManager.getInstance().forceSaveAllData();
+    }
+    
+    /**
+     * Save all checklist data to ensure persistence when navigating away
+     */
+    private void saveAllChecklistData() {
+        if (binding == null) return;
+        
+        LinearLayout checklistsGrid = binding.getRoot().findViewById(R.id.checklists_grid);
+        if (checklistsGrid == null) return;
+        
+        // Iterate through all checklist containers and save their current state
+        for (int i = 0; i < checklistsGrid.getChildCount(); i++) {
+            View checklistContainer = checklistsGrid.getChildAt(i);
+            if (checklistContainer.getTag() != null) {
+                Checklist checklist = (Checklist) checklistContainer.getTag();
+                
+                // Update the checklist data with current view states
+                updateChecklistFromViews(checklist, checklistContainer);
+                
+                // Save the updated checklist
+                ChecklistManager.getInstance().updateChecklist(checklist);
+            }
+        }
+        
+        // Force save all data to ensure persistence
+        ChecklistManager.getInstance().forceSaveAllData();
+    }
+    
+    /**
+     * Update checklist data from current view states
+     */
+    private void updateChecklistFromViews(Checklist checklist, View checklistContainer) {
+        LinearLayout tasksContainer = checklistContainer.findViewById(R.id.tasks_container);
+        if (tasksContainer == null) return;
+        
+        // Update each task's state from its view
+        for (int i = 0; i < tasksContainer.getChildCount(); i++) {
+            View taskView = tasksContainer.getChildAt(i);
+            if (taskView.getTag() != null) {
+                Checklist.Task task = (Checklist.Task) taskView.getTag();
+                CheckBox cbTask = taskView.findViewById(R.id.cb_task);
+                
+                if (cbTask != null) {
+                    // Update task state from checkbox
+                    boolean currentChecked = cbTask.isChecked();
+                    if (task.isChecked() != currentChecked) {
+                        android.util.Log.d("ChecklistFragment", "Updating task state from view: '" + task.getText() + "' to: " + currentChecked);
+                        task.setChecked(currentChecked);
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Refresh checklist views to ensure they display the latest data from ChecklistManager
+     */
+    private void refreshChecklistViews() {
+        if (binding == null) return;
+        
+        LinearLayout checklistsGrid = binding.getRoot().findViewById(R.id.checklists_grid);
+        if (checklistsGrid == null) return;
+        
+        // Get the latest data from ChecklistManager
+        List<Checklist> allChecklists = ChecklistManager.getInstance().getAllChecklists();
+        
+        // Update each existing checklist container with the latest data
+        for (int i = 0; i < checklistsGrid.getChildCount(); i++) {
+            View checklistContainer = checklistsGrid.getChildAt(i);
+            if (checklistContainer.getTag() != null) {
+                Checklist existingChecklist = (Checklist) checklistContainer.getTag();
+                
+                // Find the corresponding checklist in the latest data
+                Checklist latestChecklist = null;
+                for (Checklist checklist : allChecklists) {
+                    if (checklist.getId() == existingChecklist.getId()) {
+                        latestChecklist = checklist;
+                        break;
+                    }
+                }
+                
+                if (latestChecklist != null) {
+                    // Load task states from SharedPreferences
+                    TaskRepository.getInstance().loadAllTaskStates(latestChecklist);
+                    
+                    // Update the container's tag with the latest data
+                    checklistContainer.setTag(latestChecklist);
+                    
+                    // Refresh the task views to match the latest data
+                    refreshTaskViews(checklistContainer, latestChecklist);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Refresh task views to match the latest data
+     */
+    private void refreshTaskViews(View checklistContainer, Checklist checklist) {
+        LinearLayout tasksContainer = checklistContainer.findViewById(R.id.tasks_container);
+        if (tasksContainer == null) return;
+        
+        // Update each task view to match the latest data
+        for (int i = 0; i < tasksContainer.getChildCount(); i++) {
+            View taskView = tasksContainer.getChildAt(i);
+            if (taskView.getTag() != null) {
+                Checklist.Task task = (Checklist.Task) taskView.getTag();
+                CheckBox cbTask = taskView.findViewById(R.id.cb_task);
+                
+                if (cbTask != null) {
+                    // Update checkbox state to match the latest data
+                    boolean latestChecked = task.isChecked();
+                    if (cbTask.isChecked() != latestChecked) {
+                        android.util.Log.d("ChecklistFragment", "Refreshing task view: '" + task.getText() + "' to: " + latestChecked);
+                        cbTask.setOnCheckedChangeListener(null); // Clear listener temporarily
+                        cbTask.setChecked(latestChecked);
+                        // Reattach listener will be handled by the existing task creation methods
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Force refresh the checklist display - use this when you know data has changed
+     * This will clear all views and recreate them, so use sparingly
+     */
+    public void forceRefreshChecklists() {
+        if (binding != null) {
+            android.util.Log.d("ChecklistFragment", "Force refreshing checklists");
+            LinearLayout checklistsGrid = binding.getRoot().findViewById(R.id.checklists_grid);
+            if (checklistsGrid != null) {
+                checklistsGrid.removeAllViews(); // Force clear all views
+            }
+            loadExistingChecklists();
+        }
+    }
+    
+    /**
+     * Check for and fix corrupted task states
+     * This method detects if all tasks are checked (which is likely a bug) and resets them
+     */
+    private void fixCorruptedTaskStates(Checklist checklist) {
+        if (checklist == null || checklist.getTasks().isEmpty()) return;
+        
+        // Count how many tasks are checked
+        int checkedCount = 0;
+        for (Checklist.Task task : checklist.getTasks()) {
+            if (task.isChecked()) {
+                checkedCount++;
+            }
+        }
+        
+        // If all tasks are checked, this is likely a bug - reset them
+        if (checkedCount == checklist.getTasks().size() && checklist.getTasks().size() > 1) {
+            android.util.Log.w("ChecklistFragment", "Detected corrupted task states in checklist: " + checklist.getTitle() + " - resetting all tasks to unchecked");
+            TaskRepository.getInstance().resetChecklistTaskStates(checklist);
+        }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        android.util.Log.d("ChecklistFragment", "onDestroyView: Fragment view destroyed");
+        // Set binding to null when view is destroyed to prevent crashes
+        // The fragment instance is retained, but the view is destroyed
         binding = null;
+    }
+    
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        android.util.Log.d("ChecklistFragment", "onDestroy: Fragment destroyed");
     }
 
     private void showCreateChecklistDialog() {
@@ -252,8 +504,14 @@ public class ChecklistFragment extends Fragment {
         TextInputEditText etTaskText = taskView.findViewById(R.id.et_task_text);
         TextView btnDeleteTask = taskView.findViewById(R.id.btn_delete_task);
         
-        // Setup checkbox
-        cbTask.setChecked(task.isCompleted());
+        // Store the task reference in the view tag for debugging and verification
+        taskView.setTag(task);
+        
+        // Clear any existing listener first
+        cbTask.setOnCheckedChangeListener(null);
+        
+        // Setup checkbox state from data model
+        cbTask.setChecked(task.isChecked());
         cbTask.setEnabled(true);
         cbTask.setAlpha(1.0f);
         
@@ -288,9 +546,17 @@ public class ChecklistFragment extends Fragment {
             public void afterTextChanged(android.text.Editable s) {}
         });
         
-        // Set up checkbox listener
+        // Set up checkbox listener AFTER setting the initial state
         cbTask.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            task.setCompleted(isChecked);
+            // Verify this is the correct task before updating
+            Checklist.Task currentTask = (Checklist.Task) taskView.getTag();
+            if (currentTask == task && isChecked != task.isChecked()) {
+                task.setChecked(isChecked);
+                
+                // Save task state to SharedPreferences immediately
+                String taskId = "dialog_" + System.currentTimeMillis() + "_" + dialogTasks.indexOf(task);
+                TaskRepository.getInstance().saveTaskState(taskId, isChecked);
+            }
         });
         
         // Handle enter key to add new task
@@ -327,6 +593,8 @@ public class ChecklistFragment extends Fragment {
     }
 
     private void addChecklistToDisplay(Checklist checklist) {
+        if (binding == null) return;
+        
         // Hide the default text
         binding.textChecklist.setVisibility(View.GONE);
 
@@ -339,6 +607,8 @@ public class ChecklistFragment extends Fragment {
     }
 
     private void updateChecklistDisplay(Checklist checklist) {
+        if (binding == null) return;
+        
         // Find and update the existing checklist container
         LinearLayout checklistsGrid = binding.getRoot().findViewById(R.id.checklists_grid);
         
@@ -348,14 +618,39 @@ public class ChecklistFragment extends Fragment {
             if (child.getTag() != null) {
                 Checklist existingChecklist = (Checklist) child.getTag();
                 if (existingChecklist.getId() == checklist.getId()) {
-                    // Remove old container
-                    checklistsGrid.removeViewAt(i);
-                    
-                    // Create new container with updated content
-                    View newChecklistContainer = createChecklistContainer(checklist);
-                    checklistsGrid.addView(newChecklistContainer, i);
+                    // Instead of recreating the entire container, just update the progress display
+                    // This prevents checkbox state issues
+                    updateProgressDisplay(child, checklist);
+                    android.util.Log.d("ChecklistFragment", "Updated progress display for checklist: " + checklist.getTitle());
                     break;
                 }
+            }
+        }
+    }
+    
+    /**
+     * Update only the progress display without recreating the entire checklist container
+     */
+    private void updateProgressDisplay(View checklistContainer, Checklist checklist) {
+        LinearLayout progressContainer = checklistContainer.findViewById(R.id.progress_container);
+        TextView tvProgressText = checklistContainer.findViewById(R.id.tv_progress_text);
+        com.google.android.material.progressindicator.LinearProgressIndicator progressBar = checklistContainer.findViewById(R.id.progress_bar);
+        
+        if (progressContainer != null && tvProgressText != null && progressBar != null) {
+            if (!checklist.getTasks().isEmpty()) {
+                int completedCount = 0;
+                for (Checklist.Task task : checklist.getTasks()) {
+                    if (task.isChecked()) completedCount++;
+                }
+                
+                int totalTasks = checklist.getTasks().size();
+                int progress = totalTasks > 0 ? (completedCount * 100) / totalTasks : 0;
+                
+                tvProgressText.setText(completedCount + " of " + totalTasks + " completed");
+                progressBar.setProgress(progress);
+                progressContainer.setVisibility(View.VISIBLE);
+            } else {
+                progressContainer.setVisibility(View.GONE);
             }
         }
     }
@@ -391,6 +686,9 @@ public class ChecklistFragment extends Fragment {
             addNewTaskToChecklist(checklist, tasksContainer, btnAddTask);
         });
 
+        // Load task states from SharedPreferences before creating views
+        TaskRepository.getInstance().loadAllTaskStates(checklist);
+        
         // Add tasks to container
         List<Checklist.Task> sortedTasks = new ArrayList<>(checklist.getTasks());
         // Sort tasks for display only (don't modify original data)
@@ -450,8 +748,11 @@ public class ChecklistFragment extends Fragment {
         CheckBox cbTask = taskView.findViewById(R.id.cb_task);
         TextView tvTaskText = taskView.findViewById(R.id.tv_task_text);
         
+        // Store the task reference in the view tag for debugging and verification
+        taskView.setTag(task);
+        
         // Debug: Log task state when creating view
-        android.util.Log.d("ChecklistFragment", "Creating task view for: '" + task.getText() + "' completed: " + task.isCompleted());
+        android.util.Log.d("ChecklistFragment", "Creating task view for: '" + task.getText() + "' checked: " + task.isChecked());
         
         // Handle empty tasks (blank indicators)
         if (task.getText().isEmpty()) {
@@ -461,9 +762,10 @@ public class ChecklistFragment extends Fragment {
             tvTaskText.setAlpha(0.3f);
             cbTask.setEnabled(false);
             cbTask.setAlpha(0.3f);
+            cbTask.setOnCheckedChangeListener(null); // Clear listener for empty tasks
         } else {
             // Set task text with Google Keep styling
-            if (task.isCompleted()) {
+            if (task.isChecked()) {
                 // Apply strikethrough and fade color for completed tasks (Google Keep style)
                 SpannableString spannable = new SpannableString(task.getText());
                 spannable.setSpan(new StrikethroughSpan(), 0, task.getText().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -476,19 +778,31 @@ public class ChecklistFragment extends Fragment {
                 tvTaskText.setAlpha(1.0f);
             }
             
-            // Set checkbox state and enable it
-            cbTask.setChecked(task.isCompleted());
+            // CRITICAL: Clear any existing listener first to prevent triggering during setup
+            cbTask.setOnCheckedChangeListener(null);
+            
+            // Set checkbox state from data model (this should NOT trigger listener)
+            cbTask.setChecked(task.isChecked());
             cbTask.setEnabled(true);
             cbTask.setAlpha(1.0f);
             
-            // Set checkbox listener
+            // Set checkbox listener AFTER setting the state
             cbTask.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                android.util.Log.d("ChecklistFragment", "Checkbox changed for task: '" + task.getText() + "' to: " + isChecked);
-                task.setCompleted(isChecked);
-                ChecklistManager.getInstance().updateChecklist(checklist);
-                
-                // Refresh the display to reorder tasks and update progress
-                updateChecklistDisplay(checklist);
+                // Verify this is the correct task before updating
+                Checklist.Task currentTask = (Checklist.Task) taskView.getTag();
+                if (currentTask == task && isChecked != task.isChecked()) {
+                    android.util.Log.d("ChecklistFragment", "Checkbox changed for task: '" + task.getText() + "' to: " + isChecked);
+                    task.setChecked(isChecked);
+                    
+                    // Save task state to SharedPreferences immediately
+                    String taskId = checklist.getId() + "_" + checklist.getTasks().indexOf(task);
+                    TaskRepository.getInstance().saveTaskState(taskId, isChecked);
+                    
+                    ChecklistManager.getInstance().updateChecklist(checklist);
+                    
+                    // Refresh the display to reorder tasks and update progress
+                    updateChecklistDisplay(checklist);
+                }
             });
         }
         
@@ -528,8 +842,14 @@ public class ChecklistFragment extends Fragment {
         CheckBox cbTask = taskView.findViewById(R.id.cb_task);
         TextInputEditText etTaskText = taskView.findViewById(R.id.et_task_text);
         
-        // Setup checkbox
-        cbTask.setChecked(task.isCompleted());
+        // Store the task reference in the view tag for debugging and verification
+        taskView.setTag(task);
+        
+        // Clear any existing listener first
+        cbTask.setOnCheckedChangeListener(null);
+        
+        // Setup checkbox state from data model
+        cbTask.setChecked(task.isChecked());
         cbTask.setEnabled(true);
         cbTask.setAlpha(1.0f);
         
@@ -550,11 +870,20 @@ public class ChecklistFragment extends Fragment {
             public void afterTextChanged(android.text.Editable s) {}
         });
         
-        // Set up checkbox listener
+        // Set up checkbox listener AFTER setting the initial state
         cbTask.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            task.setCompleted(isChecked);
-            ChecklistManager.getInstance().updateChecklist(checklist);
-            updateChecklistDisplay(checklist);
+            // Verify this is the correct task before updating
+            Checklist.Task currentTask = (Checklist.Task) taskView.getTag();
+            if (currentTask == task && isChecked != task.isChecked()) {
+                task.setChecked(isChecked);
+                
+                // Save task state to SharedPreferences immediately
+                String taskId = checklist.getId() + "_" + checklist.getTasks().indexOf(task);
+                TaskRepository.getInstance().saveTaskState(taskId, isChecked);
+                
+                ChecklistManager.getInstance().updateChecklist(checklist);
+                updateChecklistDisplay(checklist);
+            }
         });
         
         // Handle enter key and focus loss
@@ -709,50 +1038,82 @@ public class ChecklistFragment extends Fragment {
     private void loadExistingChecklists() {
         if (binding == null) return;
         
-        LinearLayout checklistsGrid = binding.getRoot().findViewById(R.id.checklists_grid);
-        if (checklistsGrid == null) return;
-        
-        // Clear existing checklists from the grid
-        checklistsGrid.removeAllViews();
-        
-        // Get all checklists from ChecklistManager
-        List<Checklist> allChecklists = ChecklistManager.getInstance().getAllChecklists();
-        
-        android.util.Log.d("ChecklistFragment", "Loading existing checklists. Count: " + allChecklists.size());
-        
-        if (allChecklists.isEmpty()) {
-            // Show empty state
-            binding.textChecklist.setVisibility(View.VISIBLE);
+        // Prevent multiple simultaneous loads
+        if (isCurrentlyLoading) {
+            android.util.Log.d("ChecklistFragment", "Already loading, skipping duplicate load");
             return;
         }
         
-        // Hide default text
-        binding.textChecklist.setVisibility(View.GONE);
+        isCurrentlyLoading = true;
+        android.util.Log.d("ChecklistFragment", "Starting to load existing checklists");
         
-        // Sort checklists: pinned first, then by ID (most recent first)
-        List<Checklist> sortedChecklists = new ArrayList<>(allChecklists);
-        sortedChecklists.sort((checklist1, checklist2) -> {
-            // Pinned checklists first
-            if (checklist1.isPinned() && !checklist2.isPinned()) return -1;
-            if (!checklist1.isPinned() && checklist2.isPinned()) return 1;
-            
-            // Then by ID (most recent first)
-            return Long.compare(checklist2.getId(), checklist1.getId());
-        });
-        
-        // Debug: Log all task states before creating views
-        for (Checklist checklist : sortedChecklists) {
-            android.util.Log.d("ChecklistFragment", "Checklist: " + checklist.getTitle());
-            for (Checklist.Task task : checklist.getTasks()) {
-                android.util.Log.d("ChecklistFragment", "Task: '" + task.getText() + "' completed: " + task.isCompleted());
-            }
+        LinearLayout checklistsGrid = binding.getRoot().findViewById(R.id.checklists_grid);
+        if (checklistsGrid == null) {
+            isCurrentlyLoading = false;
+            return;
         }
         
+        // Only clear and recreate views if the grid is empty or if we need to refresh
+        boolean needsRefresh = checklistsGrid.getChildCount() == 0;
+        
+        if (needsRefresh) {
+            // Clear existing checklists from the grid only if needed
+            checklistsGrid.removeAllViews();
+            
+            // Get all checklists from ChecklistManager (shared singleton instance)
+            List<Checklist> allChecklists = ChecklistManager.getInstance().getAllChecklists();
+            
+            android.util.Log.d("ChecklistFragment", "Loading existing checklists. Count: " + allChecklists.size());
+            
+            if (allChecklists.isEmpty()) {
+                // Show empty state
+                binding.textChecklist.setVisibility(View.VISIBLE);
+                return;
+            }
+            
+            // Hide default text
+            binding.textChecklist.setVisibility(View.GONE);
+            
+            // Sort checklists: pinned first, then by ID (most recent first)
+            List<Checklist> sortedChecklists = new ArrayList<>(allChecklists);
+            sortedChecklists.sort((checklist1, checklist2) -> {
+                // Pinned checklists first
+                if (checklist1.isPinned() && !checklist2.isPinned()) return -1;
+                if (!checklist1.isPinned() && checklist2.isPinned()) return 1;
+                
+                // Then by ID (most recent first)
+                return Long.compare(checklist2.getId(), checklist1.getId());
+            });
+            
+            // Debug: Log all task states before creating views
+            for (Checklist checklist : sortedChecklists) {
+                android.util.Log.d("ChecklistFragment", "Checklist: " + checklist.getTitle());
+                for (Checklist.Task task : checklist.getTasks()) {
+                    android.util.Log.d("ChecklistFragment", "Task: '" + task.getText() + "' checked: " + task.isChecked());
+                }
+            }
+            
         // Add checklists to grid in sorted order
         for (Checklist checklist : sortedChecklists) {
+            // Check for and fix any corrupted task states
+            fixCorruptedTaskStates(checklist);
+            
+            // Load task states from SharedPreferences before creating views
+            TaskRepository.getInstance().loadAllTaskStates(checklist);
             View checklistContainer = createChecklistContainer(checklist);
             checklistsGrid.addView(checklistContainer);
         }
+        
+        // Update ViewModel with loaded data
+        ChecklistViewModel viewModel = new ViewModelProvider(requireActivity()).get(ChecklistViewModel.class);
+        viewModel.setChecklists(sortedChecklists);
+        viewModel.setFragmentLoaded(true);
+        } else {
+            android.util.Log.d("ChecklistFragment", "Views already exist, skipping recreation to preserve state");
+        }
+        
+        isCurrentlyLoading = false;
+        android.util.Log.d("ChecklistFragment", "Finished loading existing checklists");
     }
 
     private void searchChecklists(String query) {
@@ -874,9 +1235,11 @@ public class ChecklistFragment extends Fragment {
 
             public String getText() { return text; }
             public boolean isCompleted() { return taskCompleted; }
+            public boolean isChecked() { return taskCompleted; } // Alias for clarity
             
             public void setText(String text) { this.text = text; }
             public void setCompleted(boolean completed) { this.taskCompleted = completed; }
+            public void setChecked(boolean checked) { this.taskCompleted = checked; } // Alias for clarity
             
             // Gson getters/setters
             public boolean getTaskCompleted() { return taskCompleted; }
