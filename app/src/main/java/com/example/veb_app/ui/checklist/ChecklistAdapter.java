@@ -68,9 +68,9 @@ public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.Chec
     @Override
     public void onViewRecycled(@NonNull ChecklistViewHolder holder) {
         super.onViewRecycled(holder);
-        // Clear all task views and listeners when view is recycled
-        holder.clearTaskViews();
-        android.util.Log.d("ChecklistAdapter", "View recycled, cleared all task views and listeners");
+        // Only clear listeners, don't remove views to preserve state
+        holder.clearTaskListeners();
+        android.util.Log.d("ChecklistAdapter", "View recycled, cleared task listeners only");
     }
     
     @Override
@@ -142,9 +142,12 @@ public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.Chec
             // Store the checklist reference for debugging
             itemView.setTag(checklist);
             
-            // Load task states from SharedPreferences before binding
-            // This ensures we have the latest persisted states
-            TaskRepository.getInstance().loadAllTaskStates(checklist);
+            android.util.Log.d("ChecklistAdapter", "Binding checklist: " + checklist.getTitle());
+            
+            // Debug: Log task states from data model (don't modify them)
+            for (ChecklistFragment.Checklist.Task task : checklist.getTasks()) {
+                android.util.Log.d("ChecklistAdapter", "Task from data model: '" + task.getText() + "' checked: " + task.isChecked());
+            }
             
             // Set title
             tvTitle.setText(checklist.getTitle());
@@ -258,9 +261,12 @@ public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.Chec
                 cbTask.setOnCheckedChangeListener(null);
                 
                 // Set checkbox state from data model (this should NOT trigger listener)
-                cbTask.setChecked(task.isChecked());
+                boolean taskChecked = task.isChecked();
+                cbTask.setChecked(taskChecked);
                 cbTask.setEnabled(true);
                 cbTask.setAlpha(1.0f);
+                
+                android.util.Log.d("ChecklistAdapter", "Setting checkbox for task: '" + task.getText() + "' to: " + taskChecked);
                 
                 // Set checkbox listener AFTER setting the state
                 cbTask.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -272,7 +278,10 @@ public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.Chec
                         task.setChecked(isChecked);
                         
                         // Save task state to SharedPreferences immediately
-                        String taskId = checklist.getId() + "_" + checklist.getTasks().indexOf(task);
+                        // Use the same ID generation logic as TaskRepository
+                        int taskIndex = checklist.getTasks().indexOf(task);
+                        String taskId = checklist.getId() + "_" + taskIndex;
+                        android.util.Log.d("ChecklistAdapter", "Saving task state for task at index " + taskIndex + " with ID: " + taskId);
                         TaskRepository.getInstance().saveTaskState(taskId, isChecked);
                         
                         // Notify listener if available
@@ -316,6 +325,25 @@ public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.Chec
             }
             // Remove all views from container
             tasksContainer.removeAllViews();
+        }
+        
+        /**
+         * Clear only task listeners without removing views to preserve state
+         */
+        public void clearTaskListeners() {
+            // Clear only listeners, don't remove views
+            for (int i = 0; i < tasksContainer.getChildCount(); i++) {
+                View taskView = tasksContainer.getChildAt(i);
+                if (taskView != null) {
+                    CheckBox cbTask = taskView.findViewById(R.id.cb_task);
+                    if (cbTask != null) {
+                        // Clear checkbox listener to prevent memory leaks
+                        cbTask.setOnCheckedChangeListener(null);
+                    }
+                    // Clear task view click listener
+                    taskView.setOnClickListener(null);
+                }
+            }
         }
         
         /**

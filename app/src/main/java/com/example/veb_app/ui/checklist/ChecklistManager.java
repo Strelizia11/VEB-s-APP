@@ -160,9 +160,10 @@ public class ChecklistManager {
                     ChecklistFragment.Checklist.Task task = tasks.get(j);
                     json.append("{");
                     json.append("\"text\":\"").append(escapeJson(task.getText())).append("\",");
+                    json.append("\"taskId\":\"").append(escapeJson(task.getTaskId())).append("\",");
                     boolean completed = task.isChecked();
                     json.append("\"taskCompleted\":").append(completed);
-                    android.util.Log.d("ChecklistManager", "Saving task: '" + task.getText() + "' completed: " + completed);
+                    android.util.Log.d("ChecklistManager", "Saving task: '" + task.getText() + "' (ID: " + task.getTaskId() + ") completed: " + completed);
                     json.append("}");
                 }
                 json.append("]");
@@ -205,11 +206,27 @@ public class ChecklistManager {
                         checklistList.clear();
                         checklistList.addAll(loadedChecklists);
                         
-                        // Debug: Log task completion states
+                        // Check for and fix corrupted task states when loading from JSON
                         for (ChecklistFragment.Checklist checklist : loadedChecklists) {
                             android.util.Log.d("ChecklistManager", "Loaded checklist: " + checklist.getTitle());
+                            
+                            // Count checked tasks to detect corruption
+                            int checkedCount = 0;
                             for (ChecklistFragment.Checklist.Task task : checklist.getTasks()) {
-                                android.util.Log.d("ChecklistManager", "Task: '" + task.getText() + "' completed: " + task.isChecked());
+                                if (task.isChecked()) checkedCount++;
+                            }
+                            
+                            // If all tasks are checked, this is likely corruption - reset them
+                            if (checkedCount == checklist.getTasks().size() && checklist.getTasks().size() > 1) {
+                                android.util.Log.w("ChecklistManager", "Detected corrupted task states in " + checklist.getTitle() + " - resetting all tasks");
+                                for (ChecklistFragment.Checklist.Task task : checklist.getTasks()) {
+                                    task.setChecked(false);
+                                }
+                            } else {
+                                // Log normal task states
+                                for (ChecklistFragment.Checklist.Task task : checklist.getTasks()) {
+                                    android.util.Log.d("ChecklistManager", "Task: '" + task.getText() + "' checked: " + task.isChecked());
+                                }
                             }
                         }
                     }
@@ -305,9 +322,17 @@ public class ChecklistManager {
         for (String taskStr : taskStrings) {
             try {
                 String text = extractStringValue(taskStr, "text");
+                String taskId = extractStringValue(taskStr, "taskId");
                 boolean completed = extractBooleanValue(taskStr, "taskCompleted");
-                android.util.Log.d("ChecklistManager", "Parsed task: '" + text + "' completed: " + completed + " from JSON: " + taskStr);
-                tasks.add(new ChecklistFragment.Checklist.Task(text, completed));
+                
+                // If no taskId in JSON, generate one for backward compatibility
+                if (taskId.isEmpty()) {
+                    taskId = java.util.UUID.randomUUID().toString();
+                    android.util.Log.d("ChecklistManager", "Generated new taskId for legacy task: " + taskId);
+                }
+                
+                android.util.Log.d("ChecklistManager", "Parsed task: '" + text + "' (ID: " + taskId + ") completed: " + completed);
+                tasks.add(new ChecklistFragment.Checklist.Task(text, completed, taskId));
             } catch (Exception e) {
                 android.util.Log.e("ChecklistManager", "Error parsing task: " + e.getMessage());
             }

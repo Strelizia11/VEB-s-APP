@@ -33,8 +33,8 @@ public class TaskRepository {
     }
     
     /**
-     * Save a task's checked state
-     * @param taskId Unique identifier for the task (checklistId + taskIndex)
+     * Save a task's checked state using its unique ID
+     * @param taskId Unique identifier for the task
      * @param isChecked Whether the task is checked
      */
     public void saveTaskState(String taskId, boolean isChecked) {
@@ -84,7 +84,7 @@ public class TaskRepository {
     }
     
     /**
-     * Load all task states for a checklist
+     * Load all task states for a checklist using unique task IDs
      * @param checklist The checklist to load states for
      */
     public void loadAllTaskStates(ChecklistFragment.Checklist checklist) {
@@ -93,31 +93,26 @@ public class TaskRepository {
             return;
         }
         
-        String checklistId = String.valueOf(checklist.getId());
-        android.util.Log.d("TaskRepository", "Loading task states for checklist: " + checklist.getTitle() + " (ID: " + checklistId + ")");
+        android.util.Log.d("TaskRepository", "Loading task states for checklist: " + checklist.getTitle());
         
-        for (int i = 0; i < checklist.getTasks().size(); i++) {
-            ChecklistFragment.Checklist.Task task = checklist.getTasks().get(i);
-            String taskId = checklistId + "_" + i;
+        for (ChecklistFragment.Checklist.Task task : checklist.getTasks()) {
+            String taskId = task.getTaskId();
             boolean originalState = task.isChecked();
             
-            // Check if we have a saved state for this task
+            // Check if we have a saved state for this task using its unique ID
             String key = TASK_STATE_PREFIX + taskId;
             boolean hasSavedState = prefs.contains(key);
             
+            android.util.Log.d("TaskRepository", "Processing task '" + task.getText() + "' (ID: " + taskId + "): originalState=" + originalState + ", hasSavedState=" + hasSavedState);
+            
             if (hasSavedState) {
-                // Use false as default value to ensure correct behavior
+                // Load the saved state for this specific task
                 boolean savedState = loadTaskState(taskId, false);
                 task.setChecked(savedState);
                 android.util.Log.d("TaskRepository", "Loaded saved task: " + taskId + " from " + originalState + " to " + savedState);
             } else {
-                // No saved state, ensure task is unchecked by default
-                if (task.isChecked()) {
-                    task.setChecked(false);
-                    android.util.Log.d("TaskRepository", "Reset unsaved task: " + taskId + " from " + originalState + " to false");
-                } else {
-                    android.util.Log.d("TaskRepository", "Task already unchecked: " + taskId);
-                }
+                // No saved state - keep current state (don't modify)
+                android.util.Log.d("TaskRepository", "No saved state for task: " + taskId + " - keeping current state: " + task.isChecked());
             }
         }
         
@@ -164,6 +159,29 @@ public class TaskRepository {
         
         editor.apply();
         android.util.Log.d("TaskRepository", "Reset all task states to unchecked for checklist: " + checklist.getTitle());
+    }
+    
+    /**
+     * Clear all task states for a specific checklist (remove from SharedPreferences)
+     * This can be used to completely reset a checklist's task states
+     */
+    public void clearChecklistTaskStates(ChecklistFragment.Checklist checklist) {
+        if (prefs == null || checklist == null) return;
+        
+        String checklistId = String.valueOf(checklist.getId());
+        SharedPreferences.Editor editor = prefs.edit();
+        
+        // Remove all task states for this checklist
+        for (int i = 0; i < checklist.getTasks().size(); i++) {
+            String taskId = checklistId + "_" + i;
+            String key = TASK_STATE_PREFIX + taskId;
+            editor.remove(key);
+            // Also update the task object to unchecked
+            checklist.getTasks().get(i).setChecked(false);
+        }
+        
+        editor.apply();
+        android.util.Log.d("TaskRepository", "Cleared all task states for checklist: " + checklist.getTitle());
     }
     
     /**
