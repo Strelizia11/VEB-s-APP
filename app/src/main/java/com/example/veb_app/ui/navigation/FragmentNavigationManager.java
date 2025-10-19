@@ -8,7 +8,7 @@ import android.util.Log;
 import com.example.veb_app.R;
 import com.example.veb_app.ui.home.HomeFragment;
 import com.example.veb_app.ui.notes.NotesFragment;
-import com.example.veb_app.ui.checklist.ChecklistFragment;
+import com.example.veb_app.ui.todo.TodoFragment;
 import com.example.veb_app.ui.budget.BudgetFragment;
 import com.example.veb_app.ui.calendar.CalendarFragment;
 
@@ -24,7 +24,7 @@ public class FragmentNavigationManager {
     // Fragment instances
     private HomeFragment homeFragment;
     private NotesFragment notesFragment;
-    private ChecklistFragment checklistFragment;
+    private TodoFragment todoFragment;
     private BudgetFragment budgetFragment;
     private CalendarFragment calendarFragment;
     
@@ -106,10 +106,10 @@ public class FragmentNavigationManager {
                     fragment = notesFragment;
                     break;
                 case "checklist":
-                    if (checklistFragment == null) {
-                        checklistFragment = new ChecklistFragment();
+                    if (todoFragment == null) {
+                        todoFragment = new TodoFragment();
                     }
-                    fragment = checklistFragment;
+                    fragment = todoFragment;
                     break;
                 case "budget":
                     if (budgetFragment == null) {

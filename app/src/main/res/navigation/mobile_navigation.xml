@@ -19,9 +19,9 @@
 
     <fragment
         android:id="@+id/nav_checklist"
-        android:name="com.example.veb_app.ui.checklist.ChecklistFragment"
+        android:name="com.example.veb_app.ui.todo.TodoFragment"
         android:label="@string/menu_checklist"
-        tools:layout="@layout/fragment_checklist" />
+        tools:layout="@layout/fragment_todo" />
 
     <fragment
         android:id="@+id/nav_budget"

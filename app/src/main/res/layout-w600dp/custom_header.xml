@@ -14,7 +14,7 @@
         android:id="@+id/tv_app_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="VEB"
+        android:text="TEST"
         android:gravity="center"
         android:textAppearance="?attr/textAppearanceHeadlineLarge"
         android:textColor="?attr/colorOnPrimary"

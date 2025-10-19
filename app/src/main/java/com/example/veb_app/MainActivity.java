@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (destination.getId() == R.id.nav_notes) {
                     title = "Notes";
                 } else if (destination.getId() == R.id.nav_checklist) {
-                    title = "Checklist";
+                    title = "To-Do";
                 } else if (destination.getId() == R.id.nav_budget) {
                     title = "Budget";
                 } else if (destination.getId() == R.id.nav_calendar) {

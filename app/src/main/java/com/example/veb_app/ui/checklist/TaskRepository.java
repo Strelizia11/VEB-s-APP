@@ -69,11 +69,9 @@ public class TaskRepository {
         if (prefs == null || checklist == null) return;
         
         SharedPreferences.Editor editor = prefs.edit();
-        String checklistId = String.valueOf(checklist.getId());
         
-        for (int i = 0; i < checklist.getTasks().size(); i++) {
-            ChecklistFragment.Checklist.Task task = checklist.getTasks().get(i);
-            String taskId = checklistId + "_" + i;
+        for (ChecklistFragment.Checklist.Task task : checklist.getTasks()) {
+            String taskId = task.getTaskId();
             String key = TASK_STATE_PREFIX + taskId;
             editor.putBoolean(key, task.isChecked());
             android.util.Log.d("TaskRepository", "Saving task: " + taskId + " = " + task.isChecked());
@@ -145,16 +143,15 @@ public class TaskRepository {
     public void resetChecklistTaskStates(ChecklistFragment.Checklist checklist) {
         if (prefs == null || checklist == null) return;
         
-        String checklistId = String.valueOf(checklist.getId());
         SharedPreferences.Editor editor = prefs.edit();
         
         // Reset all tasks in this checklist to unchecked
-        for (int i = 0; i < checklist.getTasks().size(); i++) {
-            String taskId = checklistId + "_" + i;
+        for (ChecklistFragment.Checklist.Task task : checklist.getTasks()) {
+            String taskId = task.getTaskId();
             String key = TASK_STATE_PREFIX + taskId;
             editor.putBoolean(key, false);
             // Also update the task object
-            checklist.getTasks().get(i).setChecked(false);
+            task.setChecked(false);
         }
         
         editor.apply();
@@ -168,16 +165,15 @@ public class TaskRepository {
     public void clearChecklistTaskStates(ChecklistFragment.Checklist checklist) {
         if (prefs == null || checklist == null) return;
         
-        String checklistId = String.valueOf(checklist.getId());
         SharedPreferences.Editor editor = prefs.edit();
         
         // Remove all task states for this checklist
-        for (int i = 0; i < checklist.getTasks().size(); i++) {
-            String taskId = checklistId + "_" + i;
+        for (ChecklistFragment.Checklist.Task task : checklist.getTasks()) {
+            String taskId = task.getTaskId();
             String key = TASK_STATE_PREFIX + taskId;
             editor.remove(key);
             // Also update the task object to unchecked
-            checklist.getTasks().get(i).setChecked(false);
+            task.setChecked(false);
         }
         
         editor.apply();

@@ -10,7 +10,7 @@
 
     <string name="menu_home">Home</string>
     <string name="menu_notes">Notes</string>
-    <string name="menu_checklist">Checklist</string>
+    <string name="menu_checklist">To-Do</string>
     <string name="menu_budget">Budget</string>
     <string name="menu_calendar">Calendar</string>
 

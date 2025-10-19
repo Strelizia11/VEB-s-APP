@@ -141,38 +141,18 @@ public class ChecklistManager {
     
     private void saveChecklists() {
         if (prefs != null) {
-            // Manual JSON serialization to avoid Gson boolean issues
-            StringBuilder json = new StringBuilder();
-            json.append("[");
-            
-            for (int i = 0; i < checklistList.size(); i++) {
-                if (i > 0) json.append(",");
-                ChecklistFragment.Checklist checklist = checklistList.get(i);
-                json.append("{");
-                json.append("\"title\":\"").append(escapeJson(checklist.getTitle())).append("\",");
-                json.append("\"isPinned\":").append(checklist.isPinned()).append(",");
-                json.append("\"id\":").append(checklist.getId()).append(",");
-                json.append("\"tasks\":[");
-                
-                List<ChecklistFragment.Checklist.Task> tasks = checklist.getTasks();
-                for (int j = 0; j < tasks.size(); j++) {
-                    if (j > 0) json.append(",");
-                    ChecklistFragment.Checklist.Task task = tasks.get(j);
-                    json.append("{");
-                    json.append("\"text\":\"").append(escapeJson(task.getText())).append("\",");
-                    json.append("\"taskId\":\"").append(escapeJson(task.getTaskId())).append("\",");
-                    boolean completed = task.isChecked();
-                    json.append("\"taskCompleted\":").append(completed);
-                    android.util.Log.d("ChecklistManager", "Saving task: '" + task.getText() + "' (ID: " + task.getTaskId() + ") completed: " + completed);
-                    json.append("}");
-                }
-                json.append("]");
-                json.append("}");
-            }
-            json.append("]");
-            
-            String checklistsJson = json.toString();
+            // Use Gson for reliable JSON serialization
+            String checklistsJson = gson.toJson(checklistList);
             android.util.Log.d("ChecklistManager", "Saving checklists JSON: " + checklistsJson);
+            
+            // Log task states being saved
+            for (ChecklistFragment.Checklist checklist : checklistList) {
+                android.util.Log.d("ChecklistManager", "Saving checklist: " + checklist.getTitle());
+                for (ChecklistFragment.Checklist.Task task : checklist.getTasks()) {
+                    android.util.Log.d("ChecklistManager", "Task: '" + task.getText() + "' checked: " + task.isChecked());
+                }
+            }
+            
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString("checklists", checklistsJson);
             editor.apply();
@@ -194,39 +174,20 @@ public class ChecklistManager {
             android.util.Log.d("ChecklistManager", "Loading checklists JSON: " + checklistsJson);
             if (!checklistsJson.isEmpty()) {
                 try {
-                    // Try manual parsing first, fallback to Gson if needed
-                    List<ChecklistFragment.Checklist> loadedChecklists = parseChecklistsManually(checklistsJson);
-                    if (loadedChecklists == null) {
-                        // Fallback to Gson if manual parsing fails
-                        Type listType = new TypeToken<List<ChecklistFragment.Checklist>>(){}.getType();
-                        loadedChecklists = gson.fromJson(checklistsJson, listType);
-                    }
+                    // Use Gson directly for reliable parsing
+                    Type listType = new TypeToken<List<ChecklistFragment.Checklist>>(){}.getType();
+                    List<ChecklistFragment.Checklist> loadedChecklists = gson.fromJson(checklistsJson, listType);
                     
                     if (loadedChecklists != null) {
                         checklistList.clear();
                         checklistList.addAll(loadedChecklists);
                         
-                        // Check for and fix corrupted task states when loading from JSON
+                        // Log task states as they are loaded from JSON
                         for (ChecklistFragment.Checklist checklist : loadedChecklists) {
                             android.util.Log.d("ChecklistManager", "Loaded checklist: " + checklist.getTitle());
                             
-                            // Count checked tasks to detect corruption
-                            int checkedCount = 0;
                             for (ChecklistFragment.Checklist.Task task : checklist.getTasks()) {
-                                if (task.isChecked()) checkedCount++;
-                            }
-                            
-                            // If all tasks are checked, this is likely corruption - reset them
-                            if (checkedCount == checklist.getTasks().size() && checklist.getTasks().size() > 1) {
-                                android.util.Log.w("ChecklistManager", "Detected corrupted task states in " + checklist.getTitle() + " - resetting all tasks");
-                                for (ChecklistFragment.Checklist.Task task : checklist.getTasks()) {
-                                    task.setChecked(false);
-                                }
-                            } else {
-                                // Log normal task states
-                                for (ChecklistFragment.Checklist.Task task : checklist.getTasks()) {
-                                    android.util.Log.d("ChecklistManager", "Task: '" + task.getText() + "' checked: " + task.isChecked());
-                                }
+                                android.util.Log.d("ChecklistManager", "Task: '" + task.getText() + "' checked: " + task.isChecked());
                             }
                         }
                     }
@@ -352,14 +313,24 @@ public class ChecklistManager {
     }
     
     private boolean extractBooleanValue(String json, String key) {
-        String pattern = "\"" + key + "\":(true|false)";
-        java.util.regex.Pattern p = java.util.regex.Pattern.compile(pattern);
-        java.util.regex.Matcher m = p.matcher(json);
-        if (m.find()) {
-            boolean result = "true".equals(m.group(1));
-            android.util.Log.d("ChecklistManager", "Extracted boolean for " + key + ": " + result + " from: " + m.group(1));
-            return result;
+        // Try multiple patterns to handle different JSON formats
+        String[] patterns = {
+            "\"" + key + "\":(true|false)",           // Standard format
+            "\"" + key + "\":\\s*(true|false)",       // With whitespace
+            key + ":(true|false)",                    // Without quotes
+            key + ":\\s*(true|false)"                 // Without quotes, with whitespace
+        };
+        
+        for (String pattern : patterns) {
+            java.util.regex.Pattern p = java.util.regex.Pattern.compile(pattern);
+            java.util.regex.Matcher m = p.matcher(json);
+            if (m.find()) {
+                boolean result = "true".equals(m.group(1));
+                android.util.Log.d("ChecklistManager", "Extracted boolean for " + key + ": " + result + " from: " + m.group(1) + " using pattern: " + pattern);
+                return result;
+            }
         }
+        
         android.util.Log.w("ChecklistManager", "Could not extract boolean for " + key + " from JSON: " + json);
         return false; // Default to false - this ensures tasks are not completed by default
     }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_edit_todo"
+        android:title="Edit"
+        android:icon="@drawable/ic_edit_24dp"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_pin_todo"
+        android:title="Pin/Unpin"
+        android:icon="@drawable/ic_pin_24dp"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_delete_todo"
+        android:title="Delete"
+        android:icon="@drawable/ic_delete_24dp"
+        app:showAsAction="never" />
+
+</menu>

@@ -21,7 +21,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.veb_app.R;
 import com.example.veb_app.databinding.FragmentChecklistBinding;
-import com.example.veb_app.data.DatabaseManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -51,18 +50,10 @@ public class ChecklistFragment extends Fragment {
         binding = FragmentChecklistBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         
-        // Initialize ChecklistManager and TaskRepository if not already done
+        // Initialize ChecklistManager if not already done
         if (getContext() != null) {
             ChecklistManager.getInstance().initialize(getContext());
-            TaskRepository.getInstance().initialize(getContext());
             android.util.Log.d("ChecklistFragment", "ChecklistManager initialized with " + ChecklistManager.getInstance().getChecklistsCount() + " checklists");
-            
-            // Ensure TaskRepository is properly initialized
-            if (TaskRepository.getInstance().getAllTaskStates() != null) {
-                android.util.Log.d("ChecklistFragment", "TaskRepository initialized with " + TaskRepository.getInstance().getAllTaskStates().size() + " saved states");
-            }
-            
-            // Task states will be managed by TaskRepository.loadAllTaskStates()
         }
 
         final TextView textView = binding.textChecklist;
@@ -133,44 +124,15 @@ public class ChecklistFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        // Save all task states to SharedPreferences when user navigates away
-        android.util.Log.d("ChecklistFragment", "onPause: Saving all task states to SharedPreferences");
+        // Save checklist data to ChecklistManager (data model is single source of truth)
+        android.util.Log.d("ChecklistFragment", "onPause: Saving checklist data to ChecklistManager");
         if (binding != null) {
-            saveAllTaskStatesToSharedPreferences();
+            saveAllChecklistData();
         } else {
             android.util.Log.d("ChecklistFragment", "onPause: Binding is null, skipping save");
         }
     }
     
-    /**
-     * Save all task states to SharedPreferences using TaskRepository
-     */
-    private void saveAllTaskStatesToSharedPreferences() {
-        if (binding == null) return;
-        
-        LinearLayout checklistsGrid = binding.getRoot().findViewById(R.id.checklists_grid);
-        if (checklistsGrid == null) return;
-        
-        // Iterate through all checklist containers and save their current task states
-        for (int i = 0; i < checklistsGrid.getChildCount(); i++) {
-            View checklistContainer = checklistsGrid.getChildAt(i);
-            if (checklistContainer.getTag() != null) {
-                Checklist checklist = (Checklist) checklistContainer.getTag();
-                
-                // Update the checklist data with current view states
-                updateChecklistFromViews(checklist, checklistContainer);
-                
-                // Save task states to SharedPreferences
-                TaskRepository.getInstance().saveAllTaskStates(checklist);
-                
-                // Also save to ChecklistManager for consistency
-                ChecklistManager.getInstance().updateChecklist(checklist);
-            }
-        }
-        
-        // Force save all data to ensure persistence
-        ChecklistManager.getInstance().forceSaveAllData();
-    }
     
     /**
      * Save all checklist data to ensure persistence when navigating away
@@ -196,7 +158,7 @@ public class ChecklistFragment extends Fragment {
         }
         
         // Force save all data to ensure persistence
-        ChecklistManager.getInstance().forceSaveAllData();
+        // ChecklistManager automatically saves on update
     }
     
     /**
@@ -253,8 +215,8 @@ public class ChecklistFragment extends Fragment {
                 }
                 
                 if (latestChecklist != null) {
-                    // Load task states from SharedPreferences
-                    TaskRepository.getInstance().loadAllTaskStates(latestChecklist);
+                    // Don't load task states from SharedPreferences - use data model as single source of truth
+                    // This prevents the automatic checking issue
                     
                     // Update the container's tag with the latest data
                     checklistContainer.setTag(latestChecklist);
@@ -309,27 +271,6 @@ public class ChecklistFragment extends Fragment {
         }
     }
     
-    /**
-     * Check for and fix corrupted task states
-     * This method detects if all tasks are checked (which is likely a bug) and resets them
-     */
-    private void fixCorruptedTaskStates(Checklist checklist) {
-        if (checklist == null || checklist.getTasks().isEmpty()) return;
-        
-        // Count how many tasks are checked
-        int checkedCount = 0;
-        for (Checklist.Task task : checklist.getTasks()) {
-            if (task.isChecked()) {
-                checkedCount++;
-            }
-        }
-        
-        // If all tasks are checked, this is likely a bug - clear all states
-        if (checkedCount == checklist.getTasks().size() && checklist.getTasks().size() > 1) {
-            android.util.Log.w("ChecklistFragment", "Detected corrupted task states in checklist: " + checklist.getTitle() + " - clearing all task states");
-            TaskRepository.getInstance().clearChecklistTaskStates(checklist);
-        }
-    }
     
     /**
      * Add completed tasks section at the bottom of the checklist
@@ -386,6 +327,34 @@ public class ChecklistFragment extends Fragment {
         android.util.Log.d("ChecklistFragment", "Created completed task view: '" + task.getText() + "' (permanently checked)");
         
         return taskView;
+    }
+    
+    /**
+     * Update a single task view to reflect its new state
+     */
+    private void updateTaskViewState(View taskView, Checklist.Task task, boolean isChecked) {
+        CheckBox cbTask = taskView.findViewById(R.id.cb_task);
+        TextView tvTaskText = taskView.findViewById(R.id.tv_task_text);
+        
+        if (cbTask != null && tvTaskText != null) {
+            // Update checkbox state
+            cbTask.setChecked(isChecked);
+            
+            // Update text appearance
+            if (isChecked) {
+                // Apply strikethrough and fade color for completed tasks
+                SpannableString spannable = new SpannableString(task.getText());
+                spannable.setSpan(new StrikethroughSpan(), 0, task.getText().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                tvTaskText.setText(spannable);
+                tvTaskText.setTextColor(getResources().getColor(R.color.md_theme_light_onSurfaceVariant));
+                tvTaskText.setAlpha(0.5f);
+            } else {
+                // Remove strikethrough for active tasks
+                tvTaskText.setText(task.getText());
+                tvTaskText.setTextColor(getResources().getColor(R.color.md_theme_light_onSurface));
+                tvTaskText.setAlpha(1.0f);
+            }
+        }
     }
     
     /**
@@ -640,10 +609,8 @@ public class ChecklistFragment extends Fragment {
             if (currentTask == task && isChecked != task.isChecked()) {
                 task.setChecked(isChecked);
                 
-                // Save task state to SharedPreferences immediately using unique task ID
-                String taskId = task.getTaskId();
-                android.util.Log.d("ChecklistFragment", "Saving dialog task state: '" + task.getText() + "' with ID: " + taskId + " = " + isChecked);
-                TaskRepository.getInstance().saveTaskState(taskId, isChecked);
+                 // Update data model (Google Keep style - no separate state management)
+                 android.util.Log.d("ChecklistFragment", "Updating dialog task state: '" + task.getText() + "' to: " + isChecked);
             }
         });
         
@@ -925,15 +892,16 @@ public class ChecklistFragment extends Fragment {
                     android.util.Log.d("ChecklistFragment", "Checkbox changed for task: '" + task.getText() + "' to: " + isChecked);
                     task.setChecked(isChecked);
                     
-                    // Save task state to SharedPreferences immediately using unique task ID
-                    String taskId = task.getTaskId();
-                    android.util.Log.d("ChecklistFragment", "Saving task state for task: '" + task.getText() + "' with ID: " + taskId + " = " + isChecked);
-                    TaskRepository.getInstance().saveTaskState(taskId, isChecked);
+                     // Update data model and save to ChecklistManager (Google Keep style)
+                     android.util.Log.d("ChecklistFragment", "Updating task state for task: '" + task.getText() + "' to: " + isChecked);
+                     ChecklistManager.getInstance().updateChecklist(checklist);
                     
-                    ChecklistManager.getInstance().updateChecklist(checklist);
+                    // Update the task view to reflect the new state
+                    updateTaskViewState(taskView, task, isChecked);
                     
-                    // Refresh the display to reorder tasks and update progress
-                    refreshChecklistDisplay(checklist);
+                    // Update progress display
+                    View checklistContainer = (View) taskView.getParent().getParent();
+                    updateProgressDisplay(checklistContainer, checklist);
                 }
             });
             
@@ -1012,13 +980,16 @@ public class ChecklistFragment extends Fragment {
             if (currentTask == task && isChecked != task.isChecked()) {
                 task.setChecked(isChecked);
                 
-                // Save task state to SharedPreferences immediately using unique task ID
-                String taskId = task.getTaskId();
-                android.util.Log.d("ChecklistFragment", "Saving editable task state: '" + task.getText() + "' with ID: " + taskId + " = " + isChecked);
-                TaskRepository.getInstance().saveTaskState(taskId, isChecked);
+                 // Update data model and save to ChecklistManager (Google Keep style)
+                 android.util.Log.d("ChecklistFragment", "Updating editable task state: '" + task.getText() + "' to: " + isChecked);
+                 ChecklistManager.getInstance().updateChecklist(checklist);
                 
-                ChecklistManager.getInstance().updateChecklist(checklist);
-                updateChecklistDisplay(checklist);
+                // Update the task view to reflect the new state
+                updateTaskViewState(taskView, task, isChecked);
+                
+                // Update progress display
+                View checklistContainer = (View) taskView.getParent().getParent();
+                updateProgressDisplay(checklistContainer, checklist);
             }
         });
         
@@ -1044,7 +1015,10 @@ public class ChecklistFragment extends Fragment {
                     checklist.getTasks().remove(task);
                     tasksContainer.removeView(taskView);
                     ChecklistManager.getInstance().updateChecklist(checklist);
-                    updateChecklistDisplay(checklist);
+                    
+                    // Update progress display
+                    View checklistContainer = (View) tasksContainer.getParent();
+                    updateProgressDisplay(checklistContainer, checklist);
                 } else {
                     // Show add button again
                     btnAddTask.setVisibility(View.VISIBLE);
@@ -1231,8 +1205,8 @@ public class ChecklistFragment extends Fragment {
             
         // Add checklists to grid in sorted order
         for (Checklist checklist : sortedChecklists) {
-            // Load task states from SharedPreferences before creating views
-            TaskRepository.getInstance().loadAllTaskStates(checklist);
+            // Use data model as single source of truth - no SharedPreferences loading
+            // This prevents the automatic checking issue
             View checklistContainer = createChecklistContainer(checklist);
             checklistsGrid.addView(checklistContainer);
         }

@@ -277,12 +277,9 @@ public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.Chec
                         // Update the task model
                         task.setChecked(isChecked);
                         
-                        // Save task state to SharedPreferences immediately
-                        // Use the same ID generation logic as TaskRepository
-                        int taskIndex = checklist.getTasks().indexOf(task);
-                        String taskId = checklist.getId() + "_" + taskIndex;
-                        android.util.Log.d("ChecklistAdapter", "Saving task state for task at index " + taskIndex + " with ID: " + taskId);
-                        TaskRepository.getInstance().saveTaskState(taskId, isChecked);
+                        // Update the data model - no need for separate SharedPreferences storage
+                        // The ChecklistManager will handle persistence
+                        android.util.Log.d("ChecklistAdapter", "Updated task state: '" + task.getText() + "' to: " + isChecked);
                         
                         // Notify listener if available
                         if (taskClickListener != null) {

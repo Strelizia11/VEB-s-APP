@@ -18,8 +18,8 @@ import com.example.veb_app.databinding.FragmentHomeBinding;
 import com.example.veb_app.data.DatabaseManager;
 import com.example.veb_app.ui.notes.NotesManager;
 import com.example.veb_app.ui.notes.NotesFragment;
-import com.example.veb_app.ui.checklist.ChecklistManager;
-import com.example.veb_app.ui.checklist.ChecklistFragment;
+import com.example.veb_app.ui.todo.TodoManager;
+import com.example.veb_app.ui.todo.TodoItem;
 import com.example.veb_app.ui.budget.BudgetManager;
 import com.example.veb_app.ui.calendar.EventManager;
 import com.example.veb_app.ui.calendar.HolidayManager;
@@ -235,34 +235,35 @@ public class HomeFragment extends Fragment {
         MaterialButton btnViewAllChecklists = root.findViewById(R.id.btn_view_all_checklists);
         TextView tvNoChecklistsMessage = root.findViewById(R.id.tv_no_checklists_message);
 
-        // Get featured checklist (pinned or most recent)
-        ChecklistManager checklistManager = ChecklistManager.getInstance();
-        ChecklistFragment.Checklist featuredChecklist = checklistManager.getFeaturedChecklist();
+        // Get featured todo (pinned or most recent)
+        TodoManager todoManager = TodoManager.getInstance();
+        todoManager.initialize(requireContext());
+        TodoItem featuredTodo = getFeaturedTodo(todoManager);
 
-        if (featuredChecklist != null) {
-            // Display featured checklist
-            tvFeaturedChecklistTitle.setText(featuredChecklist.getTitle());
+        if (featuredTodo != null) {
+            // Display featured todo
+            tvFeaturedChecklistTitle.setText(featuredTodo.getTitle());
             
             // Calculate completion stats
-            int completedCount = 0;
-            int totalTasks = featuredChecklist.getTasks().size();
+            int completedTasks = featuredTodo.getCompletedTasksCount();
+            int totalTasks = featuredTodo.getTotalTasksCount();
             
-            for (ChecklistFragment.Checklist.Task task : featuredChecklist.getTasks()) {
-                if (task.isCompleted()) {
-                    completedCount++;
-                }
+            // If no sub-tasks, use the main todo completion status
+            if (totalTasks == 0) {
+                totalTasks = 1;
+                completedTasks = featuredTodo.isCompleted() ? 1 : 0;
             }
             
-            int progress = totalTasks > 0 ? (completedCount * 100) / totalTasks : 0;
+            int progress = totalTasks > 0 ? (completedTasks * 100) / totalTasks : 0;
             
             // Set progress text and circle
-            tvFeaturedChecklistProgress.setText(completedCount + " of " + totalTasks + " completed");
+            tvFeaturedChecklistProgress.setText(completedTasks + " of " + totalTasks + " completed");
             progressCircle.setProgress(progress);
             
         } else {
-            // No checklists available - show empty state
-            tvFeaturedChecklistTitle.setText("Checklist");
-            tvFeaturedChecklistProgress.setText("There is no existing checklist yet");
+            // No todos available - show empty state
+            tvFeaturedChecklistTitle.setText("To-Do");
+            tvFeaturedChecklistProgress.setText("There are no to-dos yet");
             progressCircle.setProgress(0);
         }
         
@@ -294,6 +295,24 @@ public class HomeFragment extends Fragment {
                 }
             }
         });
+    }
+    
+    private TodoItem getFeaturedTodo(TodoManager todoManager) {
+        List<TodoItem> todos = todoManager.getAllItems();
+        
+        if (todos.isEmpty()) {
+            return null;
+        }
+        
+        // First, look for pinned todos
+        for (TodoItem todo : todos) {
+            if (todo.isPinned()) {
+                return todo;
+            }
+        }
+        
+        // If no pinned todos, return the most recent (first in the list)
+        return todos.get(0);
     }
 
     private void setupBudgetOverview(View root) {

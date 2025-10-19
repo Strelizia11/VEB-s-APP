@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/md_theme_light_background"
+    tools:context=".ui.todo.TodoFragment">
+
+    <!-- Header -->
+    <LinearLayout
+        android:id="@+id/header_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_16"
+        android:background="?attr/colorSurface">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="My To-Dos"
+            android:textAppearance="?attr/textAppearanceHeadlineMedium"
+            android:textColor="@color/md_theme_light_onSurface"
+            android:textStyle="bold"
+            android:layout_marginBottom="@dimen/spacing_8" />
+
+
+    </LinearLayout>
+
+    <!-- RecyclerView for To-Dos -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_todos"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingTop="@dimen/spacing_16"
+        android:paddingStart="@dimen/spacing_16"
+        android:paddingEnd="@dimen/spacing_16"
+        android:paddingBottom="@dimen/spacing_80"
+        tools:listitem="@layout/item_todo" />
+
+    <!-- Empty State -->
+    <LinearLayout
+        android:id="@+id/layout_empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="@dimen/spacing_32"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/ic_checklist_24dp"
+            android:tint="@color/sage_green"
+            android:alpha="0.3"
+            android:layout_marginBottom="@dimen/spacing_24" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No to-dos yet"
+            android:textAppearance="?attr/textAppearanceHeadlineMedium"
+            android:textColor="@color/md_theme_light_onBackground"
+            android:textStyle="bold"
+            android:layout_marginBottom="@dimen/spacing_8" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add your first to-do by tapping the + button"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="@color/md_theme_light_onSurfaceVariant"
+            android:gravity="center"
+            android:layout_marginBottom="@dimen/spacing_32" />
+
+    </LinearLayout>
+
+    <!-- Floating Action Button -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add_todo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/spacing_16"
+        android:contentDescription="Add To-Do"
+        android:src="@drawable/ic_add_24dp"
+        app:backgroundTint="@color/sage_green"
+        app:tint="@color/md_theme_light_onPrimary"
+        app:fabSize="normal"
+        app:borderWidth="0dp" />
+
+</LinearLayout>
