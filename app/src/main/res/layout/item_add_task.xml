@@ -12,8 +12,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:hint="Task"
         app:boxBackgroundMode="none"
         app:boxStrokeWidth="0dp"
+        app:hintTextColor="@color/md_theme_light_onSurfaceVariant"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -23,8 +25,7 @@
             android:inputType="textCapSentences"
             android:maxLines="1"
             android:minLines="1"
-            android:background="@android:color/transparent"
-            android:hint="Add task" />
+            android:background="@android:color/transparent" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

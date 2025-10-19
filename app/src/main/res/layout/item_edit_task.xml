@@ -21,8 +21,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:hint="Add task"
         app:boxBackgroundMode="none"
         app:boxStrokeWidth="0dp"
+        app:hintTextColor="@color/md_theme_light_onSurfaceVariant"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
