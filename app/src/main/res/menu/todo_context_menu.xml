@@ -3,15 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_edit_todo"
-        android:title="Edit"
-        android:icon="@drawable/ic_edit_24dp"
+        android:id="@+id/action_pin_todo"
+        android:title="Pin"
+        android:icon="@drawable/ic_paper_pin_24dp"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_pin_todo"
-        android:title="Pin/Unpin"
-        android:icon="@drawable/ic_pin_24dp"
+        android:id="@+id/action_unpin_todo"
+        android:title="Unpin"
+        android:icon="@drawable/ic_paper_pin_24dp"
         app:showAsAction="never" />
 
     <item

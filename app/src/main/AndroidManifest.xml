@@ -45,6 +45,12 @@
             android:name=".notifications.EventNotificationReceiver"
             android:enabled="true"
             android:exported="false" />
+        
+        <!-- Broadcast Receiver for Deadline Notifications -->
+        <receiver
+            android:name=".ui.todo.DeadlineNotificationService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

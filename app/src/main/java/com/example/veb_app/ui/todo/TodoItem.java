@@ -13,6 +13,7 @@ public class TodoItem {
     private boolean isCompleted;
     private long createdAt;
     private boolean isPinned;
+    private long deadline;
 
     public TodoItem() {
         this.id = java.util.UUID.randomUUID().toString();
@@ -46,6 +47,9 @@ public class TodoItem {
     
     public boolean isPinned() { return isPinned; }
     public void setPinned(boolean pinned) { this.isPinned = pinned; }
+
+    public long getDeadline() { return deadline; }
+    public void setDeadline(long deadline) { this.deadline = deadline; }
     
     /**
      * Get completed tasks count

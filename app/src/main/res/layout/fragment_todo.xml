@@ -17,14 +17,28 @@
         android:padding="@dimen/spacing_16"
         android:background="?attr/colorSurface">
 
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="My To-Dos"
-            android:textAppearance="?attr/textAppearanceHeadlineMedium"
-            android:textColor="@color/md_theme_light_onSurface"
-            android:textStyle="bold"
-            android:layout_marginBottom="@dimen/spacing_8" />
+            android:hint="Search to-dos..."
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopStart="@dimen/corner_radius_medium"
+            app:boxCornerRadiusTopEnd="@dimen/corner_radius_medium"
+            app:boxCornerRadiusBottomStart="@dimen/corner_radius_medium"
+            app:boxCornerRadiusBottomEnd="@dimen/corner_radius_medium"
+            app:boxStrokeColor="@color/sage_green"
+            app:hintTextColor="@color/sage_green"
+            app:startIconDrawable="@drawable/ic_search_24dp"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_search_todos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
 
     </LinearLayout>

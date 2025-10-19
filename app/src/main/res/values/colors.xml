@@ -17,6 +17,7 @@
     <color name="sage_green_dark">#7A8F6B</color>
     <color name="sage_green_darker">#5A6B4F</color>
     <color name="sage_green_subheader">#8BA075</color>
+    <color name="pinned_todo_background">#B8C9A8</color>
     
     <!-- Pinned Checklist Colors -->
     <color name="pinned_checklist_background">#E8EDE0</color>

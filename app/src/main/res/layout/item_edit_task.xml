@@ -5,8 +5,8 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:padding="@dimen/spacing_8"
-    android:layout_marginBottom="@dimen/spacing_4">
+    android:padding="2dp"
+    android:layout_marginBottom="1dp">
 
     <CheckBox
         android:id="@+id/cb_task"
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:minWidth="0dp"
         android:minHeight="0dp"
-        android:layout_marginEnd="@dimen/spacing_12"
+        android:layout_marginEnd="4dp"
         app:buttonTint="@color/sage_green" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -36,15 +36,18 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <ImageView
+    <TextView
         android:id="@+id/iv_delete_task"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@drawable/ic_delete_24dp"
+        android:text="-"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
         android:contentDescription="Delete Task"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:padding="4dp"
-        android:tint="@color/md_theme_light_error"
-        android:layout_marginStart="@dimen/spacing_8" />
+        android:textColor="@color/md_theme_light_error"
+        android:layout_marginStart="4dp" />
 
 </LinearLayout>

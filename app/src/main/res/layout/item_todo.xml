@@ -9,9 +9,10 @@
     android:layout_marginTop="@dimen/spacing_8"
     android:layout_marginBottom="@dimen/spacing_8"
     app:cardBackgroundColor="@color/md_theme_light_surface"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="2dp"
-    app:strokeWidth="0dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/md_theme_light_outline"
     app:cardPreventCornerOverlap="false">
 
     <LinearLayout
@@ -49,6 +50,18 @@
                 android:tint="@color/sage_green" />
 
         </LinearLayout>
+
+        <!-- Deadline Display -->
+        <TextView
+            android:id="@+id/tv_deadline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Due: Dec 25, 2024"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="@color/md_theme_light_onSurfaceVariant"
+            android:textSize="12sp"
+            android:layout_marginTop="@dimen/spacing_4"
+            android:visibility="gone" />
 
 
         <!-- Tasks container -->

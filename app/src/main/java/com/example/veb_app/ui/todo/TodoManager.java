@@ -85,6 +85,49 @@ public class TodoManager {
     }
 
     /**
+     * Pin a to-do item (unpins all others)
+     */
+    public void pinItem(TodoItem item) {
+        List<TodoItem> items = getAllItems();
+        
+        // Unpin all other items and update them
+        for (TodoItem todo : items) {
+            if (!todo.getId().equals(item.getId()) && todo.isPinned()) {
+                todo.setPinned(false);
+                // Update the item in the list
+                for (int i = 0; i < items.size(); i++) {
+                    if (items.get(i).getId().equals(todo.getId())) {
+                        items.set(i, todo);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Pin the selected item
+        item.setPinned(true);
+        
+        // Update the item in the list
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getId().equals(item.getId())) {
+                items.set(i, item);
+                break;
+            }
+        }
+        
+        // Save all items
+        saveItems(items);
+    }
+
+    /**
+     * Unpin a to-do item
+     */
+    public void unpinItem(TodoItem item) {
+        item.setPinned(false);
+        updateItem(item);
+    }
+
+    /**
      * Delete a to-do item
      */
     public void deleteItem(TodoItem item) {
