@@ -160,6 +160,7 @@ public class TodoFragment extends Fragment {
         TextInputEditText etTodoTitle = dialogView.findViewById(R.id.et_todo_title);
         TextInputEditText etDeadline = dialogView.findViewById(R.id.et_deadline);
         LinearLayout tasksContainer = dialogView.findViewById(R.id.tasks_container);
+        TextView tvTasksPlaceholder = dialogView.findViewById(R.id.tv_tasks_placeholder);
         MaterialButton btnSave = dialogView.findViewById(R.id.btn_save_todo);
         MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel_todo);
         TextView dialogTitle = dialogView.findViewById(R.id.dialog_title);
@@ -341,6 +342,16 @@ public class TodoFragment extends Fragment {
     }
 
     private void addEmptyTaskToDialog(LinearLayout tasksContainer) {
+        // Count actual task inputs (excluding placeholder)
+        int taskCount = 0;
+        for (int i = 0; i < tasksContainer.getChildCount(); i++) {
+            View child = tasksContainer.getChildAt(i);
+            if (child.findViewById(R.id.et_task_text) != null) {
+                taskCount++;
+            }
+        }
+        
+        // Always add a new task input
         addTaskToDialog(tasksContainer, "");
     }
 
@@ -356,8 +367,30 @@ public class TodoFragment extends Fragment {
             etTaskText.requestFocus();
         }
         
+        // Hide placeholder when first task is added
+        if (tasksContainer.getChildCount() == 1) { // Only placeholder is present
+            View placeholder = tasksContainer.findViewById(R.id.tv_tasks_placeholder);
+            if (placeholder != null) {
+                placeholder.setVisibility(View.GONE);
+            }
+        }
+        
         // Delete task listener
         ivDeleteTask.setOnClickListener(v -> {
+            // Count actual task inputs (excluding placeholder)
+            int taskCount = 0;
+            for (int i = 0; i < tasksContainer.getChildCount(); i++) {
+                View child = tasksContainer.getChildAt(i);
+                if (child.findViewById(R.id.et_task_text) != null) {
+                    taskCount++;
+                }
+            }
+            
+            // Don't allow deleting if it's the only task input
+            if (taskCount <= 1) {
+                return; // Don't delete the last task input
+            }
+            
             tasksContainer.removeView(taskView);
         });
         
@@ -368,6 +401,29 @@ public class TodoFragment extends Fragment {
                 addEmptyTaskToDialog(tasksContainer);
             }
             return true;
+        });
+        
+        // Text watcher for newline detection
+        etTaskText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Check for newline and add new task
+                if (s.toString().contains("\n")) {
+                    String text = s.toString().replace("\n", "").trim();
+                    etTaskText.setText(text);
+                    etTaskText.setSelection(text.length());
+                    
+                    if (!text.isEmpty()) {
+                        addEmptyTaskToDialog(tasksContainer);
+                    }
+                }
+            }
         });
         
         tasksContainer.addView(taskView);

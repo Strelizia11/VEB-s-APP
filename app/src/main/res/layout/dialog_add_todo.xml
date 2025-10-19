@@ -89,7 +89,22 @@
             android:id="@+id/tasks_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:orientation="vertical">
+
+            <!-- Placeholder text when no tasks -->
+            <TextView
+                android:id="@+id/tv_tasks_placeholder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add task"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="@color/md_theme_light_onSurfaceVariant"
+                android:textStyle="italic"
+                android:gravity="center"
+                android:padding="@dimen/spacing_16"
+                android:visibility="visible" />
+
+        </LinearLayout>
 
     </ScrollView>
 
