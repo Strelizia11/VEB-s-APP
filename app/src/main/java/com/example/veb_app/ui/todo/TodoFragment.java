@@ -447,6 +447,12 @@ public class TodoFragment extends Fragment {
         for (int i = 0; i < tasksContainer.getChildCount(); i++) {
             View taskView = tasksContainer.getChildAt(i);
             TextInputEditText etTaskText = taskView.findViewById(R.id.et_task_text);
+            
+            // Skip if this view doesn't have a task input (like placeholder)
+            if (etTaskText == null) {
+                continue;
+            }
+            
             String taskText = etTaskText.getText().toString().trim();
             
             if (!taskText.isEmpty()) {
