@@ -66,26 +66,7 @@ public class HolidayManager {
         yearHolidays.add(new Holiday("Rizal Day", cal.getTime(), Holiday.HolidayType.REGULAR));
         
         // Special Non-Working Days (Blue)
-        // Chinese New Year - February 10 (simplified, should use lunar calendar)
-        cal.set(year, Calendar.FEBRUARY, 10);
-        yearHolidays.add(new Holiday("Chinese New Year", cal.getTime(), Holiday.HolidayType.SPECIAL));
         
-        // Easter dates (simplified - these should be calculated properly)
-        cal.set(year, Calendar.MARCH, 28);
-        yearHolidays.add(new Holiday("Maundy Thursday", cal.getTime(), Holiday.HolidayType.SPECIAL));
-        
-        cal.set(year, Calendar.MARCH, 29);
-        yearHolidays.add(new Holiday("Good Friday", cal.getTime(), Holiday.HolidayType.SPECIAL));
-        
-        cal.set(year, Calendar.MARCH, 30);
-        yearHolidays.add(new Holiday("Black Saturday", cal.getTime(), Holiday.HolidayType.SPECIAL));
-        
-        // Eid dates (simplified - these should be calculated properly)
-        cal.set(year, Calendar.APRIL, 10);
-        yearHolidays.add(new Holiday("Eid'l Fitr", cal.getTime(), Holiday.HolidayType.SPECIAL));
-        
-        cal.set(year, Calendar.JUNE, 16);
-        yearHolidays.add(new Holiday("Eid'l Adha", cal.getTime(), Holiday.HolidayType.SPECIAL));
         
         cal.set(year, Calendar.AUGUST, 21);
         yearHolidays.add(new Holiday("Ninoy Aquino Day", cal.getTime(), Holiday.HolidayType.SPECIAL));

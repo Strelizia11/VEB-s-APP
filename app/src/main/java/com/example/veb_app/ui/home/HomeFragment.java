@@ -330,39 +330,36 @@ public class HomeFragment extends Fragment {
             budgetManager.initialize(getContext());
         }
 
-        // Get budget data
-        double monthlyBudget = budgetManager.getMonthlyBudget();
-        double totalIncome = budgetManager.getTotalIncomeThisMonth();
-        double totalSpent = budgetManager.getTotalSpentThisMonth();
-        double remaining = budgetManager.getRemainingBudget();
+        // Get budget data (total across all time, not monthly)
+        double totalIncome = budgetManager.getTotalIncome();
+        double totalSpent = budgetManager.getTotalExpenses();
+        double remaining = budgetManager.getTotalRemaining();
 
         // Format currency
         java.text.DecimalFormat currencyFormat = new java.text.DecimalFormat("₱#,##0.00");
 
-        // Update month display
+        // Update title to show "Budget" instead of month
         if (tvBudgetTitleHome != null) {
-            java.util.Calendar cal = java.util.Calendar.getInstance();
-            java.text.SimpleDateFormat monthFormat = new java.text.SimpleDateFormat("MMMM yyyy", java.util.Locale.getDefault());
-            tvBudgetTitleHome.setText(monthFormat.format(cal.getTime()));
+            tvBudgetTitleHome.setText("Budget");
         }
 
-        // Update monthly income
+        // Update total income (all time)
         if (tvBudgetIncomeHome != null) {
             tvBudgetIncomeHome.setText("Income " + currencyFormat.format(totalIncome));
         }
 
-        // Update monthly expenses
+        // Update total expenses (all time)
         if (tvBudgetExpensesHome != null) {
             tvBudgetExpensesHome.setText("Expenses " + currencyFormat.format(totalSpent));
         }
 
-        // Update remaining budget (now on top right)
+        // Update remaining budget (total across all time)
         if (tvBudgetRemainingHome != null) {
             tvBudgetRemainingHome.setText(currencyFormat.format(remaining));
         }
 
         if (progressBudget != null) {
-            int progress = monthlyBudget > 0 ? (int) ((totalSpent / monthlyBudget) * 100) : 0;
+            int progress = totalIncome > 0 ? (int) ((totalSpent / totalIncome) * 100) : 0;
             progressBudget.setProgress(progress);
         }
 

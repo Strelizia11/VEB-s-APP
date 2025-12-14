@@ -142,11 +142,6 @@ public class BudgetFragment extends Fragment {
             });
         }
 
-        // Setup Total Budget button
-        Chip btnTotalBudget = root.findViewById(R.id.btn_total_budget);
-        if (btnTotalBudget != null) {
-            btnTotalBudget.setOnClickListener(v -> showTotalBudgetDialog());
-        }
 
         // Setup RecyclerView
         recentTransactionsRecyclerView = binding.getRoot().findViewById(R.id.recent_transactions_recycler_view);
@@ -173,41 +168,34 @@ public class BudgetFragment extends Fragment {
         TextView tvRemainingAmount = binding.getRoot().findViewById(R.id.tv_remaining_amount);
         LinearProgressIndicator progressBudget = binding.getRoot().findViewById(R.id.progress_budget);
 
-        // Update month display
-        updateMonthDisplay();
+        // Update title to show "Budget" instead of month
+        if (tvBudgetTitle != null) {
+            tvBudgetTitle.setText("Budget");
+        }
 
-        // Update monthly income
+        // Update total income (all time)
         if (tvIncomeAmount != null) {
-            tvIncomeAmount.setText("Income " + currencyFormat.format(budgetManager.getTotalIncomeThisMonth()));
+            tvIncomeAmount.setText("Income " + currencyFormat.format(budgetManager.getTotalIncome()));
         }
 
-        // Update monthly expenses
+        // Update total expenses (all time)
         if (tvExpensesAmount != null) {
-            tvExpensesAmount.setText("Expenses " + currencyFormat.format(budgetManager.getTotalSpentThisMonth()));
+            tvExpensesAmount.setText("Expenses " + currencyFormat.format(budgetManager.getTotalExpenses()));
         }
 
-        // Update remaining budget (now on top right)
+        // Update remaining budget (total across all time)
         if (tvRemainingAmount != null) {
-            tvRemainingAmount.setText(currencyFormat.format(budgetManager.getRemainingBudget()));
+            tvRemainingAmount.setText(currencyFormat.format(budgetManager.getTotalRemaining()));
         }
 
         if (progressBudget != null) {
-            double spent = budgetManager.getTotalSpentThisMonth();
-            double budget = budgetManager.getMonthlyBudget();
-            int progress = budget > 0 ? (int) ((spent / budget) * 100) : 0;
+            double spent = budgetManager.getTotalExpenses();
+            double income = budgetManager.getTotalIncome();
+            int progress = income > 0 ? (int) ((spent / income) * 100) : 0;
             progressBudget.setProgress(progress);
         }
     }
 
-    private void updateMonthDisplay() {
-        // Find the month text view and update it with current month
-        TextView tvBudgetTitle = binding.getRoot().findViewById(R.id.tv_budget_title);
-        if (tvBudgetTitle != null) {
-            Calendar cal = Calendar.getInstance();
-            SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
-            tvBudgetTitle.setText(monthFormat.format(cal.getTime()));
-        }
-    }
 
     private void updateQuickStats() {
         // Quick stats section removed - functionality moved to floating elements
@@ -370,60 +358,6 @@ public class BudgetFragment extends Fragment {
         emptyState.setVisibility(hasTransactions ? View.GONE : View.VISIBLE);
     }
 
-    private void showTotalBudgetDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_total_budget, null);
-        builder.setView(dialogView);
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-
-        // Get dialog views
-        TextView tvTotalIncome = dialogView.findViewById(R.id.tv_dialog_total_income);
-        TextView tvTotalExpenses = dialogView.findViewById(R.id.tv_dialog_total_expenses);
-        TextView tvTotalRemaining = dialogView.findViewById(R.id.tv_dialog_total_remaining);
-        ImageView ivRemainingIcon = dialogView.findViewById(R.id.iv_dialog_remaining_icon);
-        MaterialButton btnClose = dialogView.findViewById(R.id.btn_close_dialog);
-
-        // Get total values across all time
-        double totalIncome = budgetManager.getTotalIncome();
-        double totalExpenses = budgetManager.getTotalExpenses();
-        double totalRemaining = budgetManager.getTotalRemaining();
-
-        // Update income
-        if (tvTotalIncome != null) {
-            tvTotalIncome.setText(currencyFormat.format(totalIncome));
-        }
-
-        // Update expenses
-        if (tvTotalExpenses != null) {
-            tvTotalExpenses.setText(currencyFormat.format(totalExpenses));
-        }
-
-        // Update remaining with dynamic color
-        if (tvTotalRemaining != null) {
-            tvTotalRemaining.setText(currencyFormat.format(totalRemaining));
-            
-            // Color code the remaining amount and icon
-            int color;
-            if (totalRemaining >= 0) {
-                color = getResources().getColor(R.color.sage_green_darker);
-            } else {
-                color = getResources().getColor(R.color.error);
-            }
-            
-            tvTotalRemaining.setTextColor(color);
-            
-            if (ivRemainingIcon != null) {
-                ivRemainingIcon.setColorFilter(color);
-            }
-        }
-
-        // Setup close button
-        if (btnClose != null) {
-            btnClose.setOnClickListener(v -> dialog.dismiss());
-        }
-    }
 
 
     private void filterTransactions(String query) {

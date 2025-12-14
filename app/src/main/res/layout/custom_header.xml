@@ -31,7 +31,7 @@
         android:id="@+id/tv_app_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TEST"
+        android:text="VEB"
         android:textAppearance="?attr/textAppearanceHeadlineLarge"
         android:textColor="?attr/colorOnPrimary"
         android:layout_marginTop="@dimen/spacing_8"
